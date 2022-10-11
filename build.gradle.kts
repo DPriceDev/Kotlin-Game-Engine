@@ -7,6 +7,7 @@ plugins {
 
 val lwjglVersion = "3.3.1"
 val lwjglNatives = "natives-macos-arm64"
+val koinVersion = "3.2.2"
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
@@ -16,6 +17,11 @@ repositories {
 }
 
 dependencies {
+    // Koin Core features
+    implementation("io.insert-koin:koin-core:$koinVersion")
+    // Koin Test features
+    testImplementation("io.insert-koin:koin-test:$koinVersion")
+
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
     implementation("org.lwjgl", "lwjgl")

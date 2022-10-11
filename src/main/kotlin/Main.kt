@@ -1,3 +1,8 @@
+import ecs.ECS
+import entities.character.Character
+import entities.character.di.characterModule
+import systems.di.systemsModule
+import org.koin.core.context.GlobalContext.startKoin
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -12,6 +17,7 @@ fun main(args: Array<String>) {
 }
 
 private fun run() {
+    initDI()
 
     // Initialize the window and openGL
     init()
@@ -26,6 +32,15 @@ private fun run() {
     // Terminate opengl and clear error handler
     glfwTerminate()
     glfwSetErrorCallback(null)?.free()
+}
+
+private fun initDI() {
+    startKoin {
+//        // declare used logger
+//        logger()
+
+        modules(systemsModule, characterModule)
+    }
 }
 
 private fun init() {
@@ -73,9 +88,13 @@ private fun loop() {
     GL.createCapabilities()
 
     // Set clear colour, i.e. set background colour
-    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(1.0f, 0.0f, 0.0f, 0.0f)
+
+    ECS.createEntity(Character()::onCreate)
 
     while (!glfwWindowShouldClose(window)) {
+
+        ECS.run(0.0) // todo: Get delta time since last
 
         // Clear the current frame buffer
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
