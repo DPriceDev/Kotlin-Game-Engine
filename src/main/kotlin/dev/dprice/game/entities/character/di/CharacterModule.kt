@@ -1,6 +1,6 @@
-package entities.character.di
+package dev.dprice.game.entities.character.di
 
-import entities.character.Character
+import dev.dprice.game.entities.character.Character
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 

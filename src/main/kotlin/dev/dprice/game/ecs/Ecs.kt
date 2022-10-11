@@ -1,20 +1,23 @@
-package ecs
+package dev.dprice.game.ecs
 
-import ecs.model.Component
-import ecs.model.Entity
-import ecs.model.System
+import dev.dprice.game.ecs.model.Component
+import dev.dprice.game.ecs.model.Entity
+import dev.dprice.game.ecs.model.System
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import util.SparseArray
+import dev.dprice.game.util.SparseArray
 
 data class ComponentCollection<T: Component>(
     val components: SparseArray<T> = SparseArray(),
 )
 
+// todo: Move to injectable object?
 object ECS : KoinComponent {
 
     private val systems: List<System> by lazy { getKoin().getAll() }
     private val components: List<ComponentCollection<Component>> by inject()
+
+    // todo: Move to entity manager that just handles unused ids
     private val entities: MutableList<Entity> = mutableListOf()
 
     fun run(timeSinceLast: Double) {

@@ -1,16 +1,23 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-    kotlin("jvm") version "1.7.20"
-    application
-}
-
 val lwjglVersion = "3.3.1"
 val lwjglNatives = "natives-macos-arm64"
 val koinVersion = "3.2.2"
+val koinKspVersion = "1.0.3"
+
+plugins {
+    kotlin("jvm") version "1.7.20"
+    id("com.google.devtools.ksp") version "1.7.20-1.0.6"
+    application
+}
+
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
+
+sourceSets.main {
+    java.srcDirs("build/generated/ksp/main/kotlin")
+}
 
 repositories {
     mavenCentral()
@@ -19,6 +26,11 @@ repositories {
 dependencies {
     // Koin Core features
     implementation("io.insert-koin:koin-core:$koinVersion")
+
+    implementation ("io.insert-koin:koin-core:$koinVersion")
+    implementation ("io.insert-koin:koin-annotations:$koinKspVersion")
+    ksp ("io.insert-koin:koin-ksp-compiler:$koinKspVersion")
+
     // Koin Test features
     testImplementation("io.insert-koin:koin-test:$koinVersion")
 

@@ -1,4 +1,4 @@
-package ecs.model
+package dev.dprice.game.ecs.model
 
 import org.koin.core.component.KoinComponent
 

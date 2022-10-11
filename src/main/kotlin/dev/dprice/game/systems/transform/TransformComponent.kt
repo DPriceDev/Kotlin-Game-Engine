@@ -1,7 +1,7 @@
-package systems.transform
+package dev.dprice.game.systems.transform
 
-import ecs.model.Component
-import ecs.model.Entity
+import dev.dprice.game.ecs.model.Component
+import dev.dprice.game.ecs.model.Entity
 
 data class Position(
     var x: Int = 0,

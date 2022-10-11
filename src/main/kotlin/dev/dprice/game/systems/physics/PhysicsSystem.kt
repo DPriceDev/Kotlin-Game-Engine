@@ -1,8 +1,8 @@
-package systems.physics
+package dev.dprice.game.systems.physics
 
-import ecs.ComponentCollection
-import ecs.model.System
-import systems.transform.TransformComponent
+import dev.dprice.game.ecs.ComponentCollection
+import dev.dprice.game.ecs.model.System
+import dev.dprice.game.systems.transform.TransformComponent
 
 class PhysicsSystem(
     private val components: ComponentCollection<TransformComponent>

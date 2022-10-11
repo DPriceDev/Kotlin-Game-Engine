@@ -1,8 +1,10 @@
-import ecs.ECS
-import entities.character.Character
-import entities.character.di.characterModule
-import systems.di.systemsModule
+import dev.dprice.game.di.AppModule
+import dev.dprice.game.ecs.ECS
+import dev.dprice.game.entities.character.Character
+import dev.dprice.game.entities.character.di.characterModule
+import dev.dprice.game.systems.di.systemsModule
 import org.koin.core.context.GlobalContext.startKoin
+import org.koin.ksp.generated.module
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -39,7 +41,7 @@ private fun initDI() {
 //        // declare used logger
 //        logger()
 
-        modules(systemsModule, characterModule)
+        modules(systemsModule, characterModule, AppModule().module)
     }
 }
 
@@ -55,6 +57,8 @@ private fun init() {
     glfwDefaultWindowHints() // optional, the current window hints are already the default
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE) // the window will stay hidden after creation
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE) // the window will be resizable
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2)
 
     // Create the window of a size with the set title
     window = glfwCreateWindow(300, 300, "Hello World!", 0, 0)
@@ -88,16 +92,16 @@ private fun loop() {
     GL.createCapabilities()
 
     // Set clear colour, i.e. set background colour
-    glClearColor(1.0f, 0.0f, 0.0f, 0.0f)
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f)
 
     ECS.createEntity(Character()::onCreate)
 
     while (!glfwWindowShouldClose(window)) {
 
-        ECS.run(0.0) // todo: Get delta time since last
-
         // Clear the current frame buffer
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+
+        ECS.run(0.0) // todo: Get delta time since last
 
         // Swap the current frame buffer to the back buffer
         glfwSwapBuffers(window)

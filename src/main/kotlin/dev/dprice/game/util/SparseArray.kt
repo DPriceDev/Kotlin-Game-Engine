@@ -1,4 +1,4 @@
-package util
+package dev.dprice.game.util
 
 class SparseArray<T> : Collection<T> {
     private var mappings: List<IntRange> = emptyList()
