@@ -10,8 +10,8 @@ class PhysicsSystem(
 
     override fun run(timeSinceLast: Double) {
         components.components.forEach {
-            it.position.x += 1
-            it.position.y += 1
+            it.position.x += 1f
+            it.position.y += 1f
         }
     }
 }

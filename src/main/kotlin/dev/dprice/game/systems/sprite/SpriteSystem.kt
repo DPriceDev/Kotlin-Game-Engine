@@ -2,14 +2,10 @@ package dev.dprice.game.systems.sprite
 
 import dev.dprice.game.ecs.ComponentCollection
 import dev.dprice.game.ecs.model.System
+import dev.dprice.game.graphics.ShaderProgram
 import dev.dprice.game.graphics.ShaderRepository
-import dev.dprice.game.graphics.ShaderType
-import org.lwjgl.opengl.GL20.*
 import dev.dprice.game.systems.transform.TransformComponent
-import org.koin.core.annotation.Single
-import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30.*
-import java.io.File
 
 class SpriteSystem(
     private val sprites: ComponentCollection<SpriteComponent>,
@@ -19,7 +15,7 @@ class SpriteSystem(
 
     override fun run(timeSinceLast: Double) {
         sprites.components.forEach {
-//            val transform = transforms.components.getOrNull(it.entity.id)
+            val transform = transforms.components.getOrNull(it.entity.id)
             drawTriangle(it.vertexShader, it.fragmentShader)
         }
     }
@@ -28,12 +24,7 @@ class SpriteSystem(
         vertexShaderPath: String,
         fragmentShaderPath: String
     ) {
-        // Load fragment + vertex shader
-        val vertexShader = shaderRepository.getShaderId(vertexShaderPath, ShaderType.VERTEX)
-        val fragmentShader = shaderRepository.getShaderId(fragmentShaderPath, ShaderType.FRAGMENT)
-
-        // Load shader program from shaders
-        val shaderProgram = shaderRepository.getShaderProgram(vertexShader, fragmentShader)
+        val program = shaderRepository.getShaderProgram(vertexShaderPath, fragmentShaderPath)
 
         val vao = glGenVertexArrays()
         glBindVertexArray(vao)
@@ -54,7 +45,11 @@ class SpriteSystem(
 
         glClear(GL_COLOR_BUFFER_BIT)
 
-        glUseProgram(shaderProgram)
+        drawTriangles(program, vao)
+    }
+
+    private fun drawTriangles(program: ShaderProgram, vao: Int) {
+        program.use()
 
         glBindVertexArray(vao)
         glEnableVertexAttribArray(0)
@@ -64,6 +59,6 @@ class SpriteSystem(
         glDisableVertexAttribArray(0)
         glBindVertexArray(0)
 
-        glUseProgram(0)
+        program.disable()
     }
 }

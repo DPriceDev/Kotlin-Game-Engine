@@ -2,13 +2,12 @@ package dev.dprice.game.systems.transform
 
 import dev.dprice.game.ecs.model.Component
 import dev.dprice.game.ecs.model.Entity
-
-data class Position(
-    var x: Int = 0,
-    var y: Int = 0
-)
+import dev.dprice.game.models.Rotation3f
+import dev.dprice.game.models.Vector3f
 
 data class TransformComponent(
     override val entity: Entity,
-    var position: Position
+    var position: Vector3f = Vector3f(),
+    var scale: Vector3f = Vector3f(),
+    var rotation: Rotation3f = Rotation3f()
 ) : Component
