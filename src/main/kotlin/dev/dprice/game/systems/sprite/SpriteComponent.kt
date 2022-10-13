@@ -1,7 +1,7 @@
 package dev.dprice.game.systems.sprite
 
-import dev.dprice.game.ecs.model.Component
-import dev.dprice.game.ecs.model.Entity
+import dev.dprice.game.engine.ecs.model.Component
+import dev.dprice.game.engine.ecs.model.Entity
 
 class SpriteComponent(
     override val entity: Entity,

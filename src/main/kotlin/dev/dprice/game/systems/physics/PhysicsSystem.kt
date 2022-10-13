@@ -1,7 +1,7 @@
 package dev.dprice.game.systems.physics
 
-import dev.dprice.game.ecs.ComponentCollection
-import dev.dprice.game.ecs.model.System
+import dev.dprice.game.engine.ecs.ComponentCollection
+import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.systems.transform.TransformComponent
 
 class PhysicsSystem(
@@ -10,8 +10,9 @@ class PhysicsSystem(
 
     override fun run(timeSinceLast: Double) {
         components.components.forEach {
-            it.position.x += 1f
-            it.position.y += 1f
+            //it.position.x += (1f * timeSinceLast).toFloat()
+            //it.position.y += (0.1f * timeSinceLast).toFloat()
+            //it.position.z += 0f
         }
     }
 }

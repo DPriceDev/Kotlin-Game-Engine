@@ -1,4 +1,4 @@
-package dev.dprice.game.models
+package dev.dprice.game.engine.model
 
 data class Rotation3f(
     var roll: Float = 0f,

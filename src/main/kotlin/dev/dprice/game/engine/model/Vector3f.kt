@@ -1,4 +1,4 @@
-package dev.dprice.game.models
+package dev.dprice.game.engine.model
 
 data class Vector3f(
     var x: Float = 0f,

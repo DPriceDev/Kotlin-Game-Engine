@@ -1,11 +1,11 @@
-package dev.dprice.game.ecs
+package dev.dprice.game.engine.ecs
 
-import dev.dprice.game.ecs.model.Component
-import dev.dprice.game.ecs.model.Entity
-import dev.dprice.game.ecs.model.System
+import dev.dprice.game.engine.ecs.model.Component
+import dev.dprice.game.engine.ecs.model.Entity
+import dev.dprice.game.engine.ecs.model.System
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import dev.dprice.game.util.SparseArray
+import dev.dprice.game.engine.util.SparseArray
 
 data class ComponentCollection<T: Component>(
     val components: SparseArray<T> = SparseArray(),

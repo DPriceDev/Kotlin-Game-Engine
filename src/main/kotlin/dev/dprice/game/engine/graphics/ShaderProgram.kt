@@ -1,6 +1,7 @@
-package dev.dprice.game.graphics
+package dev.dprice.game.engine.graphics
 
 import org.lwjgl.opengl.GL20
+import org.lwjgl.opengl.GL20.*
 
 interface ShaderProgram {
 
@@ -11,10 +12,12 @@ interface ShaderProgram {
     fun disable()
 
     fun destroy()
+
+    fun setMatrix4f(name: String, matrix: FloatArray)
 }
 
 class OpenGlShaderProgram : ShaderProgram {
-    private var program: Int? = null
+    private var program: Int = -1
 
     override fun initialize(vertexShaderPath: String, fragmentShaderPath: String) {
         val vertexShader = createShader(vertexShaderPath, GL20.GL_VERTEX_SHADER)
@@ -27,17 +30,38 @@ class OpenGlShaderProgram : ShaderProgram {
     }
 
     override fun use() {
-        program?.let { GL20.glUseProgram(it) }
+        glUseProgram(program)
     }
 
     override fun disable() {
-        GL20.glUseProgram(0)
+        glUseProgram(0)
     }
 
     override fun destroy() {
-        program?.let {
-            GL20.glDeleteProgram(it)
-            program = null
+        glDeleteProgram(program)
+    }
+
+    override fun setMatrix4f(name: String, matrix: FloatArray) {
+        val location = glGetUniformLocation(program, name)
+
+        when (val error = glGetError()) {
+            GL_NO_ERROR -> { /* no-op */ }
+            GL_INVALID_OPERATION -> error("failed to set matrix 4f uniform value: INVALID OPERATION")
+            GL_INVALID_VALUE -> error("failed to set matrix 4f uniform value: INVALID VALUE")
+            else -> error("failed to set matrix 4f uniform value: $error")
+        }
+
+        glUniformMatrix4fv(
+            location,
+            false,
+            matrix
+        )
+
+        when (val error = glGetError()) {
+            GL_NO_ERROR -> { /* no-op */ }
+            GL_INVALID_OPERATION -> error("failed to set matrix 4f uniform value: INVALID OPERATION")
+            GL_INVALID_VALUE -> error("failed to set matrix 4f uniform value: INVALID VALUE")
+            else -> error("failed to set matrix 4f uniform value: $error")
         }
     }
 

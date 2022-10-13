@@ -1,4 +1,4 @@
-package dev.dprice.game.graphics
+package dev.dprice.game.engine.graphics
 
 import org.koin.core.annotation.Single
 

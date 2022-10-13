@@ -1,8 +1,8 @@
 package dev.dprice.game.systems.camera
 
-import dev.dprice.game.ecs.model.Component
-import dev.dprice.game.ecs.model.Entity
-import dev.dprice.game.models.Vector3f
+import dev.dprice.game.engine.ecs.model.Component
+import dev.dprice.game.engine.ecs.model.Entity
+import dev.dprice.game.engine.model.Vector3f
 
 data class Camera2DComponent(
     override val entity: Entity,

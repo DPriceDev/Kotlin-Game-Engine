@@ -1,7 +1,8 @@
 import dev.dprice.game.di.AppModule
-import dev.dprice.game.ecs.ECS
+import dev.dprice.game.engine.ecs.ECS
+import dev.dprice.game.entities.camera.Camera2D
 import dev.dprice.game.entities.character.Character
-import dev.dprice.game.entities.character.di.characterModule
+import dev.dprice.game.systems.camera.Camera2DComponent
 import dev.dprice.game.systems.di.systemsModule
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.ksp.generated.module
@@ -10,6 +11,7 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
+import java.time.LocalDateTime
 
 
 private var window: Long = 0
@@ -41,7 +43,7 @@ private fun initDI() {
 //        // declare used logger
 //        logger()
 
-        modules(systemsModule, characterModule, AppModule().module)
+        modules(systemsModule, AppModule().module)
     }
 }
 
@@ -61,7 +63,7 @@ private fun init() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2)
 
     // Create the window of a size with the set title
-    window = glfwCreateWindow(300, 300, "Hello World!", 0, 0)
+    window = glfwCreateWindow(800, 600, "Hello World!", 0, 0)
     if (window == 0L) {
         error("Failed to create the GLFW window")
     }
@@ -94,14 +96,19 @@ private fun loop() {
     // Set clear colour, i.e. set background colour
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f)
 
+    ECS.createEntity(Camera2D()::onCreate)
     ECS.createEntity(Character()::onCreate)
 
+    var time = System.nanoTime()
+
     while (!glfwWindowShouldClose(window)) {
+        val delta = (System.nanoTime() - time) / 1000000000.0
+        time = System.nanoTime()
 
         // Clear the current frame buffer
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        ECS.run(0.0) // todo: Get delta time since last
+        ECS.run(delta) // todo: Get delta time since last
 
         // Swap the current frame buffer to the back buffer
         glfwSwapBuffers(window)

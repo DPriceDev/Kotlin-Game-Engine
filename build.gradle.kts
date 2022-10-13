@@ -32,7 +32,7 @@ dependencies {
     ksp ("io.insert-koin:koin-ksp-compiler:$koinKspVersion")
 
     // Koin Test features
-    testImplementation("io.insert-koin:koin-test:$koinVersion")
+    //testImplementation("io.insert-koin:koin-test:$koinVersion")
 
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
