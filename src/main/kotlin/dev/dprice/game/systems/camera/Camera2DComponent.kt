@@ -3,9 +3,15 @@ package dev.dprice.game.systems.camera
 import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.ecs.model.Entity
 import dev.dprice.game.engine.model.Vector3f
+import dev.dprice.game.systems.camera.model.Fustrum
 
 data class Camera2DComponent(
     override val entity: Entity,
-    val localPosition: Vector3f,
-    val target: Vector3f
+    var target: Vector3f = Vector3f(),
+    var depth: Float = 50f,
+    var fustrum: Fustrum = Fustrum(
+        width = 800f,
+        height = 600f,
+        depth = 100f
+    )
 ) : Component

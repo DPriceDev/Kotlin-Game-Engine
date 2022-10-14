@@ -3,9 +3,8 @@ layout (location = 0) in vec3 aPos;
 
 uniform mat4 world;
 uniform mat4 view;
-uniform mat4 camera;
 
 void main()
 {
-    gl_Position = camera * view * world * vec4(aPos, 1.0);
+    gl_Position = view * world * vec4(aPos, 1.0);
 }

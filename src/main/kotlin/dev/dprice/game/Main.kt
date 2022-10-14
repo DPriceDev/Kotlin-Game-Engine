@@ -1,9 +1,11 @@
+
 import dev.dprice.game.di.AppModule
 import dev.dprice.game.engine.ecs.ECS
 import dev.dprice.game.entities.camera.Camera2D
+import dev.dprice.game.entities.camera.TestInput
 import dev.dprice.game.entities.character.Character
-import dev.dprice.game.systems.camera.Camera2DComponent
 import dev.dprice.game.systems.di.systemsModule
+import dev.dprice.game.systems.input.model.InputAction
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.ksp.generated.module
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
@@ -11,7 +13,6 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
-import java.time.LocalDateTime
 
 
 private var window: Long = 0
@@ -70,10 +71,13 @@ private fun init() {
 
     // Key callback for keyboard interactions
     glfwSetKeyCallback(window) { window, key, scancode, action, mods ->
-        when {
-            // Close the window if escape is pressed
-            key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE -> glfwSetWindowShouldClose(window, true)
-        }
+
+        ECS.registerInput(key, action)
+
+//        when {
+//            // Close the window if escape is pressed
+//            key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE -> glfwSetWindowShouldClose(window, true)
+//        }
     }
 
     // todo: Optional stack push here?
@@ -98,6 +102,8 @@ private fun loop() {
 
     ECS.createEntity(Camera2D()::onCreate)
     ECS.createEntity(Character()::onCreate)
+
+    ECS.addInputMapping(InputAction(GLFW_KEY_ESCAPE, GLFW_RELEASE)) { inputAction -> TestInput }
 
     var time = System.nanoTime()
 

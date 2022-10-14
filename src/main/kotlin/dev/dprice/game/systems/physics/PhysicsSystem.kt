@@ -10,8 +10,8 @@ class PhysicsSystem(
 
     override fun run(timeSinceLast: Double) {
         components.components.forEach {
-            //it.position.x += (1f * timeSinceLast).toFloat()
-            //it.position.y += (0.1f * timeSinceLast).toFloat()
+            it.position.x += (10f * timeSinceLast).toFloat()
+            it.position.y += (10f * timeSinceLast).toFloat()
             //it.position.z += 0f
         }
     }
