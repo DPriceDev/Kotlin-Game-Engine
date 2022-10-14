@@ -1,9 +1,8 @@
 
 import dev.dprice.game.di.AppModule
 import dev.dprice.game.engine.ecs.ECS
-import dev.dprice.game.entities.camera.Camera2D
-import dev.dprice.game.entities.camera.TestInput
-import dev.dprice.game.entities.character.Character
+import dev.dprice.game.entities.character.*
+import dev.dprice.game.systems.di.componentsModule
 import dev.dprice.game.systems.di.systemsModule
 import dev.dprice.game.systems.input.model.InputAction
 import org.koin.core.context.GlobalContext.startKoin
@@ -44,7 +43,7 @@ private fun initDI() {
 //        // declare used logger
 //        logger()
 
-        modules(systemsModule, AppModule().module)
+        modules(systemsModule, AppModule().module, componentsModule)
     }
 }
 
@@ -100,10 +99,13 @@ private fun loop() {
     // Set clear colour, i.e. set background colour
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f)
 
-    ECS.createEntity(Camera2D()::onCreate)
     ECS.createEntity(Character()::onCreate)
 
-    ECS.addInputMapping(InputAction(GLFW_KEY_ESCAPE, GLFW_RELEASE)) { inputAction -> TestInput }
+    ECS.addInputMapping(InputAction(GLFW_KEY_W, GLFW_PRESS)) { inputAction -> MoveUp }
+    ECS.addInputMapping(InputAction(GLFW_KEY_S, GLFW_PRESS)) { inputAction -> MoveDown }
+    ECS.addInputMapping(InputAction(GLFW_KEY_A, GLFW_PRESS)) { inputAction -> MoveLeft }
+    ECS.addInputMapping(InputAction(GLFW_KEY_D, GLFW_PRESS)) { inputAction -> MoveRight }
+
 
     var time = System.nanoTime()
 

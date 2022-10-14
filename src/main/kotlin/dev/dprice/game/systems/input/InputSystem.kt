@@ -17,9 +17,7 @@ class InputSystem(
             component.inputs.clear()
             component.inputs.addAll(
                 inputs.filter { input ->
-                    component.acceptedInputs.any { inputClass ->
-                        input::class == inputClass
-                    }
+                    component.acceptedInputs.any { inputClass -> input::class == inputClass::class }
                 }
             )
         }

@@ -8,6 +8,7 @@ import dev.dprice.game.systems.camera.Camera2DSystem
 import dev.dprice.game.systems.input.InputComponent
 import dev.dprice.game.systems.input.InputSystem
 import dev.dprice.game.systems.input.model.Input
+import dev.dprice.game.systems.physics.PhysicsComponent
 import dev.dprice.game.systems.physics.PhysicsSystem
 import dev.dprice.game.systems.sprite.SpriteComponent
 import dev.dprice.game.systems.sprite.SpriteSystem
@@ -16,9 +17,16 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+val componentsModule = module {
+    single(named<Camera2DComponent>()) {  ComponentCollection<Camera2DComponent>() }
+    single(named<SpriteComponent>()) {  ComponentCollection<SpriteComponent>() }
+    single(named<TransformComponent>()) { ComponentCollection<TransformComponent>() }
+    single(named<InputComponent<Input>>()) { ComponentCollection<InputComponent<Input>>() }
+    single(named<PhysicsComponent>()) { ComponentCollection<PhysicsComponent>() }
+}
+
 val systemsModule = module {
 
-    single(named<Camera2DComponent>()) {  ComponentCollection<Camera2DComponent>() }
     single {
         Camera2DSystem(
             get(named<TransformComponent>()),
@@ -26,7 +34,6 @@ val systemsModule = module {
         )
     } bind System::class
 
-    single(named<SpriteComponent>()) {  ComponentCollection<SpriteComponent>() }
     single {
         SpriteSystem(
             get(named<SpriteComponent>()),
@@ -36,10 +43,13 @@ val systemsModule = module {
         )
     } bind System::class
 
-    single(named<TransformComponent>()) { ComponentCollection<TransformComponent>() }
-    single { PhysicsSystem(get(named<TransformComponent>())) } bind System::class
+    single {
+        PhysicsSystem(
+            get(named<PhysicsComponent>()),
+            get(named<TransformComponent>()),
+        )
+    } bind System::class
 
-    single(named<InputComponent<Input>>()) { ComponentCollection<InputComponent<Input>>() }
     single {
         InputSystem(
             get(named<InputComponent<Input>>()),
@@ -49,7 +59,8 @@ val systemsModule = module {
 
     single {
         CharacterSystem(
-            get(named<InputComponent<Input>>())
+            get(named<InputComponent<Input>>()),
+            get(named<TransformComponent>())
         )
     } bind System::class
 }

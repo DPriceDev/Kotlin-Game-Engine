@@ -5,14 +5,17 @@ import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.systems.transform.TransformComponent
 
 class PhysicsSystem(
-    private val components: ComponentCollection<TransformComponent>
+    private val physicsComponents: ComponentCollection<PhysicsComponent>,
+    private val transformComponents: ComponentCollection<TransformComponent>
 ) : System {
 
     override fun run(timeSinceLast: Double) {
-        components.components.forEach {
-            it.position.x += (10f * timeSinceLast).toFloat()
-            it.position.y += (10f * timeSinceLast).toFloat()
-            //it.position.z += 0f
+        physicsComponents.components.forEach { physicsComponent ->
+            val transformComponent = transformComponents.components
+                .getOrNull(physicsComponent.entity.id)
+                ?: error("No transform found") // todo: Skip
+
+            transformComponent.position = transformComponent.position + physicsComponent.gravity
         }
     }
 }

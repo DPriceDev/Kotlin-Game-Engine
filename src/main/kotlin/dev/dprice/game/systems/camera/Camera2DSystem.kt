@@ -18,7 +18,7 @@ class Camera2DSystem(
 
             // todo: Move camera to follow transform
             camera.target = transform.position.copy(
-                x = -transform.position.x,
+                x = camera.target.x + ((transform.position.x - camera.target.x) * timeSinceLast).toFloat(),
                 y = -transform.position.y,
                 z = -transform.position.z
             )
