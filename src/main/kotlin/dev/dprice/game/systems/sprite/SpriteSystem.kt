@@ -10,8 +10,11 @@ import dev.dprice.game.engine.model.scale
 import dev.dprice.game.engine.model.translate
 import dev.dprice.game.systems.camera.Camera2DComponent
 import dev.dprice.game.systems.transform.TransformComponent
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*
+import org.lwjgl.stb.STBImage.stbi_image_free
+import org.lwjgl.stb.STBImage.stbi_load
 
 class SpriteSystem(
     private val sprites: ComponentCollection<SpriteComponent>,
@@ -71,14 +74,22 @@ class SpriteSystem(
         // setup vbo and vao and elo
         val (vao, vbo, ebo) = generateSprite()
 
+        val texture = loadTexture()
+
         // draw sprite to screen
         renderToScreen(vao)
 
-        // clear up
+        // unbind buffers vao and vbo
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+        glBindVertexArray(0)
+
+        // delete buffers
         program.disable()
         glDeleteVertexArrays(vao)
         GL15.glDeleteBuffers(vbo)
         GL15.glDeleteBuffers(ebo)
+        GL11.glDeleteTextures(texture)
     }
 
     private fun generateSprite(): SpriteOutput {
@@ -93,18 +104,45 @@ class SpriteSystem(
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, quadTriangleIndices, GL_STATIC_DRAW)
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0)
-        glBindVertexArray(0)
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * 4, 0)
 
         return SpriteOutput(vao, vbo, ebo)
+    }
+
+    private fun loadTexture(): Int {
+        val texture = glGenTextures()
+        glBindTexture(GL_TEXTURE_2D, texture)
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+
+        val x = IntArray(1)
+        val y = IntArray(1)
+        val nrChannels = IntArray(1)
+        val data = stbi_load("/Users/C64258A/repos/other/Game/src/main/resources/textures/container.jpeg", x, y, nrChannels, 0)
+
+        data?.let {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x[0], y[0], 0, GL_RGB, GL_UNSIGNED_BYTE, it)
+            glGenerateMipmap(GL_TEXTURE_2D)
+
+            stbi_image_free(it)
+        } ?: error("Failed to load texture")
+
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.SIZE_BYTES, 3L * Float.SIZE_BYTES)
+
+        return texture
     }
 
     private fun renderToScreen(vao: Int) {
         glBindVertexArray(vao)
         glEnableVertexAttribArray(0)
+        glEnableVertexAttribArray(1)
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
 
+        glDisableVertexAttribArray(1)
         glDisableVertexAttribArray(0)
         glBindVertexArray(0)
     }
@@ -113,10 +151,10 @@ class SpriteSystem(
 
     companion object {
         private val quadVertices = floatArrayOf(
-            0.5f, 0.5f, 0.0f,  // top right
-            0.5f, -0.5f, 0.0f,  // bottom right
-            -0.5f, -0.5f, 0.0f,  // bottom left
-            -0.5f, 0.5f, 0.0f   // top left
+            0.5f, 0.5f, 0.0f, 1.0f, 1.0f, // top right
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
+            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,   // top left
         )
         private val quadTriangleIndices = intArrayOf(
             0, 1, 3,   // first triangle
