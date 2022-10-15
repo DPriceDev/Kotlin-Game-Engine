@@ -1,12 +1,12 @@
-package dev.dprice.game.systems.sprite
+package dev.dprice.game.engine.ecs.systems.sprite
 
 import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
+import dev.dprice.game.engine.ecs.systems.camera.Camera2DComponent
+import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.graphics.ShaderRepository
 import dev.dprice.game.engine.graphics.util.orthographicMatrix
 import dev.dprice.game.engine.model.*
-import dev.dprice.game.systems.camera.Camera2DComponent
-import dev.dprice.game.systems.transform.TransformComponent
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*

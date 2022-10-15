@@ -1,4 +1,4 @@
-package dev.dprice.game.systems.camera.model
+package dev.dprice.game.engine.ecs.systems.camera.model
 
 data class Fustrum(
     val width: Float,

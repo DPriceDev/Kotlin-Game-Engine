@@ -1,4 +1,4 @@
-package dev.dprice.game.systems.transform
+package dev.dprice.game.engine.ecs.systems.transform
 
 import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.ecs.model.Entity

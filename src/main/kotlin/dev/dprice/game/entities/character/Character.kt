@@ -3,11 +3,11 @@ package dev.dprice.game.entities.character
 import dev.dprice.game.engine.ecs.model.Entity
 import dev.dprice.game.engine.ecs.model.EntityCreator
 import dev.dprice.game.engine.ecs.model.createComponent
-import dev.dprice.game.systems.camera.Camera2DComponent
-import dev.dprice.game.systems.input.InputComponent
-import dev.dprice.game.systems.input.model.Input
-import dev.dprice.game.systems.sprite.SpriteComponent
-import dev.dprice.game.systems.transform.TransformComponent
+import dev.dprice.game.engine.ecs.systems.camera.Camera2DComponent
+import dev.dprice.game.engine.ecs.systems.input.InputComponent
+import dev.dprice.game.engine.input.model.Input
+import dev.dprice.game.engine.ecs.systems.sprite.SpriteComponent
+import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import org.koin.core.annotation.Single
 
 object MoveUp : Input

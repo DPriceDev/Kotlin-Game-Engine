@@ -1,4 +1,4 @@
-package dev.dprice.game.systems.sprite
+package dev.dprice.game.engine.ecs.systems.sprite
 
 import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.ecs.model.Entity

@@ -1,4 +1,4 @@
-package dev.dprice.game.systems.physics
+package dev.dprice.game.engine.ecs.systems.physics
 
 import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.ecs.model.Entity

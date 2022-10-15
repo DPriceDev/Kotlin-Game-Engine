@@ -1,9 +1,9 @@
-package dev.dprice.game.systems.camera
+package dev.dprice.game.engine.ecs.systems.camera
 
 import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.ecs.model.Entity
 import dev.dprice.game.engine.model.Vector3f
-import dev.dprice.game.systems.camera.model.Fustrum
+import dev.dprice.game.engine.ecs.systems.camera.model.Fustrum
 
 data class Camera2DComponent(
     override val entity: Entity,

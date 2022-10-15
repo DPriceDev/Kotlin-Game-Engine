@@ -1,7 +1,7 @@
-package dev.dprice.game.systems.input
+package dev.dprice.game.engine.input
 
-import dev.dprice.game.systems.input.model.Input
-import dev.dprice.game.systems.input.model.InputAction
+import dev.dprice.game.engine.input.model.Input
+import dev.dprice.game.engine.input.model.InputAction
 import org.koin.core.annotation.Single
 
 interface InputRepository {

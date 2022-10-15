@@ -1,10 +1,10 @@
-package dev.dprice.game.systems.camera
+package dev.dprice.game.engine.ecs.systems.camera
 
 import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.model.lerpTo
 import dev.dprice.game.engine.model.negate
-import dev.dprice.game.systems.transform.TransformComponent
+import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 
 
 class FollowCamera2DSystem(

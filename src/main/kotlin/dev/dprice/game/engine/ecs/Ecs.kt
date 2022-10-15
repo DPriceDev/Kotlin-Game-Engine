@@ -4,12 +4,11 @@ import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.ecs.model.Entity
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.util.SparseArray
-import dev.dprice.game.systems.input.InputRepository
-import dev.dprice.game.systems.input.model.Input
-import dev.dprice.game.systems.input.model.InputAction
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.reflect.KClass
 
+// todo: Replace with just the sparse array?
 data class ComponentCollection<T: Component>(
     val components: SparseArray<T> = SparseArray(),
 )
@@ -17,9 +16,11 @@ data class ComponentCollection<T: Component>(
 // todo: Move to injectable object?
 object ECS : KoinComponent {
 
-    private val systems: List<System> by lazy { getKoin().getAll() }
+    // split out?
+    private val systems: MutableList<System> = mutableListOf()
+
+    // todo: Split out?
     private val components: List<ComponentCollection<Component>> by inject()
-    private val inputRepository: InputRepository by inject()
 
     // todo: Move to entity manager that just handles unused ids
     private val entities: MutableList<Entity> = mutableListOf()
@@ -48,11 +49,20 @@ object ECS : KoinComponent {
         }
     }
 
-    fun addInputMapping(action: InputAction, inputConverter: (InputAction) -> Input) {
-        inputRepository.addInputActionMapping(action, inputConverter)
+    fun addSystem(system: System) : ECS {
+        systems.add(system)
+        return this
     }
 
-    fun registerInput(key: Int, action: Int) {
-        inputRepository.addInputAction(InputAction(key, action))
+    fun <T: System> removeSystem(type: KClass<T>) : ECS {
+        systems.removeIf { type.isInstance(it) }
+        return this
     }
 }
+
+inline fun <reified T : System> ECS.registerSystem() : ECS {
+    val system: T by inject()
+    return addSystem(system = system)
+}
+
+inline fun <reified T : System> ECS.unregisterSystem() =  removeSystem(T::class)

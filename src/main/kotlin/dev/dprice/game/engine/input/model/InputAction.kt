@@ -1,4 +1,4 @@
-package dev.dprice.game.systems.input.model
+package dev.dprice.game.engine.input.model
 
 data class InputAction(
     val key: Int,

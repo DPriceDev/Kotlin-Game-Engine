@@ -3,9 +3,9 @@ package dev.dprice.game.entities.character
 import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.model.Vector3f
-import dev.dprice.game.systems.input.InputComponent
-import dev.dprice.game.systems.input.model.Input
-import dev.dprice.game.systems.transform.TransformComponent
+import dev.dprice.game.engine.ecs.systems.input.InputComponent
+import dev.dprice.game.engine.input.model.Input
+import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 
 class CharacterSystem(
     private val inputs: ComponentCollection<InputComponent<Input>>,

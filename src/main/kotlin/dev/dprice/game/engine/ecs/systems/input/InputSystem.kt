@@ -1,8 +1,9 @@
-package dev.dprice.game.systems.input
+package dev.dprice.game.engine.ecs.systems.input
 
 import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
-import dev.dprice.game.systems.input.model.Input
+import dev.dprice.game.engine.input.model.Input
+import dev.dprice.game.engine.input.InputRepository
 
 class InputSystem(
     private val inputComponents: ComponentCollection<InputComponent<Input>>,

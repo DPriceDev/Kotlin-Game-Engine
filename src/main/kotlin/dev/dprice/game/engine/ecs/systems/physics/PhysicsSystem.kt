@@ -1,8 +1,8 @@
-package dev.dprice.game.systems.physics
+package dev.dprice.game.engine.ecs.systems.physics
 
 import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
-import dev.dprice.game.systems.transform.TransformComponent
+import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 
 class PhysicsSystem(
     private val physicsComponents: ComponentCollection<PhysicsComponent>,
