@@ -4,7 +4,7 @@ import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.entities.character.CharacterSystem
 import dev.dprice.game.systems.camera.Camera2DComponent
-import dev.dprice.game.systems.camera.Camera2DSystem
+import dev.dprice.game.systems.camera.FollowCamera2DSystem
 import dev.dprice.game.systems.input.InputComponent
 import dev.dprice.game.systems.input.InputSystem
 import dev.dprice.game.systems.input.model.Input
@@ -28,7 +28,7 @@ val componentsModule = module {
 val systemsModule = module {
 
     single {
-        Camera2DSystem(
+        FollowCamera2DSystem(
             get(named<TransformComponent>()),
             get(named<Camera2DComponent>())
         )

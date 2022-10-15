@@ -4,10 +4,7 @@ import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.graphics.ShaderRepository
 import dev.dprice.game.engine.graphics.util.orthographicMatrix
-import dev.dprice.game.engine.model.Matrix4f
-import dev.dprice.game.engine.model.asFloatArray
-import dev.dprice.game.engine.model.scale
-import dev.dprice.game.engine.model.translate
+import dev.dprice.game.engine.model.*
 import dev.dprice.game.systems.camera.Camera2DComponent
 import dev.dprice.game.systems.transform.TransformComponent
 import org.lwjgl.opengl.GL11
@@ -15,6 +12,7 @@ import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.stb.STBImage.stbi_image_free
 import org.lwjgl.stb.STBImage.stbi_load
+import java.nio.file.Paths
 
 class SpriteSystem(
     private val sprites: ComponentCollection<SpriteComponent>,
@@ -66,6 +64,7 @@ class SpriteSystem(
         val worldTransform = Matrix4f.identity()
             .translate(transform.position)
             .scale(transform.scale)
+            .rotate(transform.rotation)
 
         // apply otho or perspective camera?
         program.setMatrix4f("world", worldTransform.asFloatArray())
@@ -74,7 +73,7 @@ class SpriteSystem(
         // setup vbo and vao and elo
         val (vao, vbo, ebo) = generateSprite()
 
-        val texture = loadTexture()
+        val texture = loadTexture(sprite.texturePath)
 
         // draw sprite to screen
         renderToScreen(vao)
@@ -109,7 +108,7 @@ class SpriteSystem(
         return SpriteOutput(vao, vbo, ebo)
     }
 
-    private fun loadTexture(): Int {
+    private fun loadTexture(textureFile: String): Int {
         val texture = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, texture)
 
@@ -121,7 +120,8 @@ class SpriteSystem(
         val x = IntArray(1)
         val y = IntArray(1)
         val nrChannels = IntArray(1)
-        val data = stbi_load("/Users/C64258A/repos/other/Game/src/main/resources/textures/container.jpeg", x, y, nrChannels, 0)
+        val texturePath = Paths.get("").toAbsolutePath().toString() + "/src/main/resources" + textureFile
+        val data = stbi_load(texturePath, x, y, nrChannels, 0)
 
         data?.let {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x[0], y[0], 0, GL_RGB, GL_UNSIGNED_BYTE, it)

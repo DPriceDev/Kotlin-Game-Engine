@@ -2,10 +2,12 @@ package dev.dprice.game.systems.camera
 
 import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
+import dev.dprice.game.engine.model.lerpTo
+import dev.dprice.game.engine.model.negate
 import dev.dprice.game.systems.transform.TransformComponent
 
 
-class Camera2DSystem(
+class FollowCamera2DSystem(
     private val transforms: ComponentCollection<TransformComponent>,
     private val cameras: ComponentCollection<Camera2DComponent>
 ) : System {
@@ -16,12 +18,8 @@ class Camera2DSystem(
                 .getOrNull(camera.entity.id)
                 ?: error("cannot find transform for camera") // todo: maybe just skip?
 
-            // todo: Move camera to follow transform
-            camera.target = transform.position.copy(
-                x = camera.target.x + ((transform.position.x - camera.target.x) * timeSinceLast).toFloat(),
-                y = -transform.position.y,
-                z = -transform.position.z
-            )
+            camera.target = camera.target
+                .lerpTo(transform.position.negate(), (timeSinceLast * 2f).toFloat())
         }
     }
 }

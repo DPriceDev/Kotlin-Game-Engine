@@ -20,7 +20,7 @@ class Character : EntityCreator {
 
     override fun onCreate(entity: Entity) {
         createComponent(entity, TransformComponent(entity))
-        createComponent(entity, SpriteComponent(entity))
+        createComponent(entity, SpriteComponent(entity, "/textures/container.jpeg"))
         createComponent(entity, Camera2DComponent(entity))
         createComponent(entity,
             InputComponent(

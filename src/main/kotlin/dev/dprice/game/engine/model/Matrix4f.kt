@@ -1,5 +1,8 @@
 package dev.dprice.game.engine.model
 
+import kotlin.math.cos
+import kotlin.math.sin
+
 class Matrix4f(values: List<Float> = identity) {
     private val values: List<Float> = values.let {
         when {
@@ -83,3 +86,34 @@ fun Matrix4f.scale(scale: Vector3f) = this * Matrix4f(
     0f, 0f, scale.z, 0f,
     0f, 0f, 0f, 1f
 )
+
+fun Matrix4f.rotate(rotation: Degree, axis: Vector3f) : Matrix4f {
+    val cos = cos(rotation.toRadians().value)
+    val cosMinus = (1 - cos)
+    val sin = sin(rotation.toRadians().value)
+
+    return with(axis.normalize()) {
+        val aa = x * x * cosMinus + cos
+        val ab = x * y * cosMinus - z * sin
+        val ac = x * z * cosMinus + y * sin
+        val ba = y * x * cosMinus + z * sin
+        val bb = y * y * cosMinus + cos
+        val bc = y * z * cosMinus - x * sin
+        val ca = z * x * cosMinus - y * sin
+        val cb = z * y * cosMinus + x * sin
+        val cc = z * z * cosMinus + cos
+
+        this@rotate * Matrix4f(
+            aa, ab, ac, 0f,
+            ba, bb, bc, 0f,
+            ca, cb, cc, 0f,
+            0f, 0f, 0f, 1f
+        )
+    }
+}
+
+fun Matrix4f.rotate(rotation3f: Rotation3f) : Matrix4f {
+    return rotate(rotation3f.pitch, Vector3f(x = 1f))
+        .rotate(rotation3f.roll, Vector3f(y = 1f))
+        .rotate(rotation3f.yaw, Vector3f(z = 1f))
+}
