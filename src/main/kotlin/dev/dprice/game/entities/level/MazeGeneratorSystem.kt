@@ -7,6 +7,7 @@ import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.Vector3f
 import dev.dprice.game.engine.util.SparseArray
 import dev.dprice.game.entities.character.Character
+import dev.dprice.game.entities.enemy.Enemy
 import dev.dprice.game.entities.tiles.*
 
 class MazeGeneratorSystem(
@@ -40,6 +41,11 @@ class MazeGeneratorSystem(
                     Vector3f(y = -(8f * 9))
                 )::onCreate
             )
+
+            ECS.createEntity(Enemy(characterIndex = 4)::onCreate)
+            ECS.createEntity(Enemy(characterIndex = 5)::onCreate)
+            ECS.createEntity(Enemy(characterIndex = 6)::onCreate)
+            ECS.createEntity(Enemy(characterIndex = 7)::onCreate)
 
             level.isMazeGenerated = true
         }

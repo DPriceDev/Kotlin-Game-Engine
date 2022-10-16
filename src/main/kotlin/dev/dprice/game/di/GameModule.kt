@@ -1,8 +1,11 @@
 package dev.dprice.game.di
 
 import dev.dprice.game.engine.ecs.model.System
+import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.util.SparseArray
+import dev.dprice.game.entities.enemy.EnemyComponent
+import dev.dprice.game.entities.enemy.EnemySystem
 import dev.dprice.game.entities.level.MazeComponent
 import dev.dprice.game.entities.level.MazeGeneratorSystem
 import dev.dprice.game.entities.navigation.NavigatableComponent
@@ -25,6 +28,16 @@ val gameModule = module {
             get(named<NavigatorComponent>()),
             get(named<NavigatableComponent>()),
             get(named<TransformComponent>())
+        )
+    } bind System::class
+
+    single(named<EnemyComponent>()) { SparseArray<EnemyComponent>() }
+
+    single {
+        EnemySystem(
+            get(named<EnemyComponent>()),
+            get(named<NavigatorComponent>()),
+            get(named<SpriteAnimatorComponent>())
         )
     } bind System::class
 }

@@ -8,6 +8,7 @@ import dev.dprice.game.engine.ecs.systems.sprite.SpriteSystem
 import dev.dprice.game.engine.input.model.InputAction
 import dev.dprice.game.engine.runGame
 import dev.dprice.game.entities.character.*
+import dev.dprice.game.entities.enemy.EnemySystem
 import dev.dprice.game.entities.level.Maze
 import dev.dprice.game.entities.level.MazeGeneratorSystem
 import dev.dprice.game.entities.navigation.NavigationSystem
@@ -26,6 +27,7 @@ fun main(args: Array<String>) {
             registerSystem<NavigationSystem>()
             registerSystem<MazeGeneratorSystem>()
             registerSystem<CharacterSystem>()
+            registerSystem<EnemySystem>()
 
             registerSystem<SpriteSystem>()
             registerSystem<SpriteAnimatorSystem>()

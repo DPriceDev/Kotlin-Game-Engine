@@ -104,6 +104,9 @@ class SpriteSystem(
     }
 
     private fun bindTexture(texture: LoadedTexture) {
+        glEnable(GL_BLEND)
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.SIZE_BYTES, 3L * Float.SIZE_BYTES)
 
         glActiveTexture(GL_TEXTURE0)

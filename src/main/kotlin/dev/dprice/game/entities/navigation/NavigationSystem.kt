@@ -28,14 +28,14 @@ class NavigationSystem(
                     (nodeTransform.position - navigatorTransform.position) to node
                 }
                 .filter { (difference, node) ->
-                    (abs(difference.length()) <= navigator.searchDistance) && node.canPlayerUse
+                    (abs(difference.length()) <= navigator.searchDistance) && (node.canPlayerUse || navigator.canUseAISpaces)
                 }
 
             val availableDirections = availableNodes.mapNotNull { (difference, _) ->
                 val angleX = difference.angleTo(Vector3f(1f)).value
                 val angleY = difference.angleTo(Vector3f(y = 1f)).value
                 when {
-                    difference == Vector3f() -> navigator.direction to difference
+                    difference == Vector3f() -> null
                     angleX in -45f..45f -> Direction.RIGHT to difference
                     angleX in 136f..180f || angleX in -180f..-136f -> Direction.LEFT to difference
                     angleY in -45f..45f -> Direction.UP to difference

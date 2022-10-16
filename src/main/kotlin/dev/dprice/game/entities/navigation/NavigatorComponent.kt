@@ -8,5 +8,6 @@ data class NavigatorComponent(
     override val entity: Entity,
     var direction: Direction = Direction.RIGHT,
     var availableDirections: List<Direction> = emptyList(),
-    var searchDistance: Float = 9f
+    var searchDistance: Float = 8.5f,
+    val canUseAISpaces: Boolean = false
 ) : Component
