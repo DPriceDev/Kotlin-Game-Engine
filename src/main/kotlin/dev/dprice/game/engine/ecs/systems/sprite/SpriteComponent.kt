@@ -11,8 +11,8 @@ sealed class Texture {
         override val path: String,
         val tileWidth: Int,
         val tileHeight: Int,
-        val xIndex: Int,
-        val yIndex: Int,
+        var xIndex: Int,
+        var yIndex: Int,
         val spacing: Int = 0
     ) : Texture()
 }
@@ -22,6 +22,7 @@ sealed class Texture {
 class SpriteComponent(
     override val entity: Entity,
     val texture: Texture,
+    val zDepth: Float = 0f,
     val vertexShader: String = "shaders/BasicVertexShader.glsl",
     val fragmentShader: String = "shaders/BasicFragmentShader.glsl",
 ) : Component

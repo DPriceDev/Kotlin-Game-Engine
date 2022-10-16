@@ -6,6 +6,7 @@ import dev.dprice.game.engine.ecs.model.get
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.Vector3f
 import dev.dprice.game.engine.util.SparseArray
+import dev.dprice.game.entities.character.Character
 import dev.dprice.game.entities.walls.WalkableTile
 import dev.dprice.game.entities.walls.WallCreator
 
@@ -34,6 +35,8 @@ class LevelGeneratorSystem(
                     createTile(tile, position)
                 }
             }
+
+            ECS.createEntity(Character()::onCreate)
 
             level.isLevelGenerated = true
         }

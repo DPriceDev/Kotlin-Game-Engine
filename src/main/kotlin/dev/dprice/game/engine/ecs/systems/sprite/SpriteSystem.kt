@@ -3,21 +3,21 @@ package dev.dprice.game.engine.ecs.systems.sprite
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.ecs.systems.camera.Camera2DComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
+import dev.dprice.game.engine.graphics.LoadedTexture
 import dev.dprice.game.engine.graphics.ShaderRepository
+import dev.dprice.game.engine.graphics.TextureRepository
 import dev.dprice.game.engine.graphics.util.orthographicMatrix
 import dev.dprice.game.engine.model.*
 import dev.dprice.game.engine.util.SparseArray
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*
-import org.lwjgl.stb.STBImage.*
-import java.nio.file.Paths
 
 class SpriteSystem(
     private val sprites: SparseArray<SpriteComponent>,
     private val transforms: SparseArray<TransformComponent>,
     private val cameras: SparseArray<Camera2DComponent>,
-    private val shaderRepository: ShaderRepository
+    private val shaderRepository: ShaderRepository,
+    private val textureRepository: TextureRepository
 ) : System {
 
     override fun run(timeSinceLast: Double) {
@@ -52,12 +52,6 @@ class SpriteSystem(
         return fustrumTransform * viewTransform
     }
 
-    data class LoadedTexture(
-        val id: Int,
-        val width: Int,
-        val height: Int
-    )
-
     private fun drawToScreen(
         sprite: SpriteComponent,
         transform: TransformComponent,
@@ -66,7 +60,7 @@ class SpriteSystem(
         val program = shaderRepository.getShaderProgram(sprite.vertexShader, sprite.fragmentShader)
         program.use()
 
-        val texture = loadTexture(sprite.texture.path)
+        val texture = textureRepository.getTexture(sprite.texture.path)
 
         val vertices = when(sprite.texture) {
             is Texture.Full -> quadVerticesAndCoords
@@ -81,10 +75,11 @@ class SpriteSystem(
         // setup vbo and vao and elo
         val (vao, vbo, ebo) = generateSprite(vertices)
 
-        bindTextureCoordinates()
+        bindTexture(texture)
 
         val worldTransform = Matrix4f.identity()
             .translate(transform.position)
+            .translate(Vector3f(z = sprite.zDepth))
             .scale(Vector3f(x = width.toFloat(), y = height.toFloat()))
             .scale(transform.scale)
             .rotate(transform.rotation)
@@ -106,11 +101,13 @@ class SpriteSystem(
         glDeleteVertexArrays(vao)
         GL15.glDeleteBuffers(vbo)
         GL15.glDeleteBuffers(ebo)
-        GL11.glDeleteTextures(texture.id)
     }
 
-    private fun bindTextureCoordinates() {
+    private fun bindTexture(texture: LoadedTexture) {
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.SIZE_BYTES, 3L * Float.SIZE_BYTES)
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, texture.id)
     }
 
     private fun generateSprite(vertices: FloatArray): SpriteOutput {
@@ -157,32 +154,7 @@ class SpriteSystem(
         )
     }
 
-    private fun loadTexture(textureFile: String): LoadedTexture {
-        val texture = glGenTextures()
-        glBindTexture(GL_TEXTURE_2D, texture)
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-
-        val x = IntArray(1)
-        val y = IntArray(1)
-        val nrChannels = IntArray(1)
-        val texturePath = Paths.get("").toAbsolutePath().toString() + "/src/main/resources" + textureFile
-        stbi_set_flip_vertically_on_load(true)
-        val data = stbi_load(texturePath, x, y, nrChannels, 0)
-
-        data?.let {
-            val format = if (nrChannels.first() == 4) GL_RGBA else GL_RGB
-            glTexImage2D(GL_TEXTURE_2D, 0, format, x[0], y[0], 0, format, GL_UNSIGNED_BYTE, it)
-            glGenerateMipmap(GL_TEXTURE_2D)
-
-            stbi_image_free(it)
-        } ?: error("Failed to load texture")
-
-        return LoadedTexture(texture, x.first(), y.first())
-    }
 
     private fun renderToScreen(vao: Int) {
         glBindVertexArray(vao)

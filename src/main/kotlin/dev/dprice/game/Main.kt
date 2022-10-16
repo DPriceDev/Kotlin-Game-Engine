@@ -2,6 +2,7 @@ package dev.dprice.game
 
 import dev.dprice.game.di.gameModule
 import dev.dprice.game.engine.ecs.registerSystem
+import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorSystem
 import dev.dprice.game.engine.ecs.systems.camera.FollowCamera2DSystem
 import dev.dprice.game.engine.ecs.systems.input.InputSystem
 import dev.dprice.game.engine.ecs.systems.sprite.SpriteSystem
@@ -25,6 +26,7 @@ fun main(args: Array<String>) {
             registerSystem<FollowCamera2DSystem>()
             registerSystem<CharacterSystem>()
             registerSystem<LevelGeneratorSystem>()
+            registerSystem<SpriteAnimatorSystem>()
             //todo: ordering systems? registerSystem<SpriteSystem>(after = InputSystem)
 
             //createEntity(Character()::onCreate)

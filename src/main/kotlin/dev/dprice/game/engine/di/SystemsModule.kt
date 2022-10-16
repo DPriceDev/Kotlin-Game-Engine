@@ -1,6 +1,8 @@
 package dev.dprice.game.engine.di
 
 import dev.dprice.game.engine.ecs.model.System
+import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorComponent
+import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorSystem
 import dev.dprice.game.engine.ecs.systems.camera.Camera2DComponent
 import dev.dprice.game.engine.ecs.systems.camera.FollowCamera2DSystem
 import dev.dprice.game.engine.ecs.systems.input.InputComponent
@@ -23,6 +25,7 @@ val componentsModule = module {
     single(named<TransformComponent>()) { SparseArray<TransformComponent>() }
     single(named<InputComponent<Input>>()) { SparseArray<InputComponent<Input>>() }
     single(named<PhysicsComponent>()) { SparseArray<PhysicsComponent>() }
+    single(named<SpriteAnimatorComponent>()) { SparseArray<SpriteAnimatorComponent>() }
 }
 
 val systemsModule = module {
@@ -39,6 +42,7 @@ val systemsModule = module {
             get(named<SpriteComponent>()),
             get(named<TransformComponent>()),
             get(named<Camera2DComponent>()),
+            get(),
             get()
         )
     } bind System::class
@@ -61,6 +65,13 @@ val systemsModule = module {
         CharacterSystem(
             get(named<InputComponent<Input>>()),
             get(named<TransformComponent>())
+        )
+    } bind System::class
+
+    single {
+        SpriteAnimatorSystem(
+            get(named<SpriteComponent>()),
+            get(named<SpriteAnimatorComponent>())
         )
     } bind System::class
 }
