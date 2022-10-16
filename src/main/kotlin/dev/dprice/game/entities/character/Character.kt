@@ -31,7 +31,7 @@ class Character(
             entity,
             SpriteComponent(
                 entity,
-                Texture.TileMap("/textures/charsheet.png", 16, 16, 0, 0),
+                Texture.TileMap("/textures/charsheet.png", 15, 15, 0, 0,1),
                 zDepth = 1f
             )
         )

@@ -4,10 +4,13 @@ import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.ecs.model.get
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.Vector3f
+import dev.dprice.game.engine.model.angleTo
 import dev.dprice.game.engine.model.length
 import dev.dprice.game.engine.util.SparseArray
 import dev.dprice.game.entities.character.Direction
 import kotlin.math.abs
+import kotlin.math.min
+import kotlin.math.sign
 
 class NavigationSystem(
     private val navigators: SparseArray<NavigatorComponent>,
@@ -28,76 +31,60 @@ class NavigationSystem(
                     (abs(difference.length()) <= navigator.searchDistance) && node.canPlayerUse
                 }
 
-            val availableDirections = availableNodes.map { (difference, node) ->
+            val availableDirections = availableNodes.mapNotNull { (difference, _) ->
+                val angleX = difference.angleTo(Vector3f(1f)).value
+                val angleY = difference.angleTo(Vector3f(y = 1f)).value
                 when {
-                    difference.x > 0 && abs(difference.x) > abs(difference.y) -> Direction.RIGHT to node
-                    difference.x < 0 && abs(difference.x) > abs(difference.y) -> Direction.LEFT to node
-                    difference.y > 0 && abs(difference.y) > abs(difference.x) -> Direction.UP to node
-                    difference.y < 0 && abs(difference.y) > abs(difference.x) -> Direction.DOWN to node
-                    difference == Vector3f() -> navigator.direction to node
-                    else -> error("Failed to find direction to navigate")
+                    difference == Vector3f() -> navigator.direction to difference
+                    angleX in -45f..45f -> Direction.RIGHT to difference
+                    angleX in 136f..180f || angleX in -180f..-136f -> Direction.LEFT to difference
+                    angleY in -45f..45f -> Direction.UP to difference
+                    angleY in 136f..180f || angleY in -180f..-136f  -> Direction.DOWN to difference
+                    else -> null
                 }
             }
 
             navigator.availableDirections = availableDirections.map { it.first }
 
-            // todo: switch to move towards a specific node location
-            val movement = when (navigator.direction) {
-                Direction.UP -> {
-                    if (availableDirections.any { it.first == Direction.UP }) {
-                        val vector = availableDirections.maxBy {
-                            val nodeTransform = transforms.get(it.second) ?: error("transform not found")
-                            nodeTransform.position.y
-                        }
-                        val nodeTransform = transforms.get(vector.second) ?: error("transform not found")
-                        val difference = nodeTransform.position - navigatorTransform.position
-                        Vector3f(y = 60f, x= difference.x)
-                    } else {
-                        Vector3f()
-                    }
-                }
-                Direction.DOWN -> {
-                    if (availableDirections.any { it.first == Direction.DOWN }) {
-                        val vector = availableDirections.minBy {
-                            val nodeTransform = transforms.get(it.second) ?: error("transform not found")
-                            nodeTransform.position.y
-                        }
-                        val nodeTransform = transforms.get(vector.second) ?: error("transform not found")
-                        val difference = nodeTransform.position - navigatorTransform.position
-                        Vector3f(y = -60f, x= difference.x)
-                    } else {
-                        Vector3f()
-                    }
-                }
-                Direction.LEFT -> {
-                    if (availableDirections.any { it.first == Direction.LEFT }) {
-                        val vector = availableDirections.minBy {
-                            val nodeTransform = transforms.get(it.second) ?: error("transform not found")
-                            nodeTransform.position.x
-                        }
-                        val nodeTransform = transforms.get(vector.second) ?: error("transform not found")
-                        val difference = nodeTransform.position - navigatorTransform.position
-                        Vector3f(x = -60f, y= difference.y)
-                    } else {
-                        Vector3f()
-                    }
-                }
-                Direction.RIGHT -> {
-                    if (availableDirections.any { it.first == Direction.RIGHT }) {
-                        val vector = availableDirections.maxBy {
-                            val nodeTransform = transforms.get(it.second) ?: error("transform not found")
-                            nodeTransform.position.x
-                        }
-                        val nodeTransform = transforms.get(vector.second) ?: error("transform not found")
-                        val difference = nodeTransform.position - navigatorTransform.position
-                        Vector3f(x = 60f, y= difference.y)
-                    } else {
-                        Vector3f()
-                    }
-                }
+            if (navigator.direction == Direction.RIGHT && navigator.availableDirections.contains(Direction.RIGHT)) {
+                val test = availableDirections
+                    .filter { it.first == Direction.RIGHT }
+                    .maxBy { (_, difference) -> abs(difference.length()) }
+                navigatorTransform.position = navigatorTransform.position + Vector3f(
+                    x = min(60f * timeSinceLast.toFloat(), test.second.length()),
+                    y = test.second.y.sign * min(60f * timeSinceLast.toFloat(), abs(test.second.y))
+                )
             }
 
-            navigatorTransform.position = navigatorTransform.position + (movement * timeSinceLast.toFloat())
+            if (navigator.direction == Direction.LEFT && navigator.availableDirections.contains(Direction.LEFT)) {
+                val test = availableDirections
+                    .filter { it.first == Direction.LEFT }
+                    .maxBy { (_, difference) -> abs(difference.length()) }
+                navigatorTransform.position = navigatorTransform.position + Vector3f(
+                    x = -min(60f * timeSinceLast.toFloat(), test.second.length()),
+                    y = test.second.y.sign * min(60f * timeSinceLast.toFloat(), abs(test.second.y))
+                )
+            }
+
+            if (navigator.direction == Direction.UP && navigator.availableDirections.contains(Direction.UP)) {
+                val test = availableDirections
+                    .filter { it.first == Direction.UP }
+                    .maxBy { (_, difference) -> abs(difference.length()) }
+                navigatorTransform.position = navigatorTransform.position + Vector3f(
+                    y = min(60f * timeSinceLast.toFloat(), test.second.length()),
+                    x = test.second.x.sign * min(60f * timeSinceLast.toFloat(), abs(test.second.x))
+                )
+            }
+
+            if (navigator.direction == Direction.DOWN && navigator.availableDirections.contains(Direction.DOWN)) {
+                val test = availableDirections
+                    .filter { it.first == Direction.DOWN }
+                    .maxBy { (_, difference) -> abs(difference.length()) }
+                navigatorTransform.position = navigatorTransform.position + Vector3f(
+                    y = -min(60f * timeSinceLast.toFloat(), test.second.length()),
+                    x = test.second.x.sign * min(60f * timeSinceLast.toFloat(), abs(test.second.x))
+                )
+            }
         }
     }
 }
