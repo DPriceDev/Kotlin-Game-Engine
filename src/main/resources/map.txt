@@ -1,0 +1,31 @@
+a------------rq------------b
+|            il            !
+| e^^f e^^^f il e^^^f e^^f !
+|*i00l i000l il i000l i00l*!
+| g~~h g~~~h gh g~~~h g~~h !
+|                          !
+| e^^f ef e^^^^^^f ef e^^f !
+| g~~h il g~~ts~~h il g~~h !
+|      il    il    il      !
+c____f iu^^f.il.e^^vl e____d
+00000| is~~h.gh.g~~tl !00000
+00000| il..........il !00000
+00000| il.4_2++1_3.il !00000
+-----h gh.!++++++|.gh g-----
+...... ...!++++++|... ......
+_____f ef.!++++++|.ef e_____
+00000| il.6------5.il !00000
+00000| il....&&....il !00000
+00000| il.e^^^^^^f.il !00000
+a----h gh.g~~ts~~h.gh g----b
+|            il            !
+| e^^f e^^^f il e^^^f e^^f !
+| g~tl g~~~h gh g~~~h is~h !
+|*  il       @@       il  *!
+x^f il ef e^^^^^^f ef il e^w
+z~h gh il g~~ts~~h il gh g~y
+|      il    il    il      !
+| e^^^^vu^^f il e^^vu^^^^f !
+| g~~~~~~~~h gh g~~~~~~~~h !
+|                          !
+c__________________________d

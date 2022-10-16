@@ -26,9 +26,7 @@ fun runGame(setup: GameBuilder.() -> Unit) {
 
     val inputRepository = GlobalContext.get().get<InputRepository>()
 
-    GameBuilder()
-        .apply(setup)
-        .build(ECS, inputRepository)
+    GameBuilder().apply(setup).build()
 
     runGame(inputRepository)
 }
@@ -71,7 +69,7 @@ private fun initializeWindow(): Window {
     GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2)
 
     // Create the window of a size with the set title
-    val id = GLFW.glfwCreateWindow(800, 600, "Hello World!", 0, 0)
+    val id = GLFW.glfwCreateWindow(600, 600, "Hello World!", 0, 0)
     if (id == 0L) {
         error("Failed to create the GLFW window")
     }

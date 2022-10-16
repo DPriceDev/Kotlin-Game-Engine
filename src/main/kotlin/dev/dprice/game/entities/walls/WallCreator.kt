@@ -10,15 +10,22 @@ import dev.dprice.game.engine.model.Vector3f
 import org.koin.core.annotation.Single
 
 @Single
-class WallCreator : EntityCreator {
+class WallCreator(
+    private val position: Vector3f = Vector3f(),
+    private val xTileIndex: Int = 0,
+    private val yTileIndex: Int = 0,
+) : EntityCreator {
 
     override fun onCreate(entity: Entity) {
-        createComponent(entity, TransformComponent(entity, scale = Vector3f(10f, 10f)))
+        createComponent(
+            entity,
+            TransformComponent(entity, position = position, scale = Vector3f(1f, 1f))
+        )
         createComponent(
             entity,
             SpriteComponent(
                 entity,
-                Texture.TileMap("/textures/spritesheet.png", 8, 8, 1, 1, 1)
+                Texture.TileMap("/textures/spritesheet.png", 8, 8, xTileIndex, yTileIndex, 1)
             )
         )
     }

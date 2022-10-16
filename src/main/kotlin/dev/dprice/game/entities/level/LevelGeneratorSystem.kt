@@ -1,22 +1,110 @@
 package dev.dprice.game.entities.level
 
+import dev.dprice.game.engine.ecs.ECS
 import dev.dprice.game.engine.ecs.model.System
+import dev.dprice.game.engine.ecs.model.get
+import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
+import dev.dprice.game.engine.model.Vector3f
+import dev.dprice.game.engine.util.SparseArray
+import dev.dprice.game.entities.walls.WalkableTile
+import dev.dprice.game.entities.walls.WallCreator
 
 class LevelGeneratorSystem(
-    
+    private val levelComponents: SparseArray<LevelComponent>,
+    private val transformComponents: SparseArray<TransformComponent>
 ) : System {
 
     override fun run(timeSinceLast: Double) {
-        // todo: clear existing entities
 
-        // todo: generate walls
+        levelComponents.filter { !it.isLevelGenerated }.forEach { level ->
+            val transform = transformComponents.get(level) ?: error("Cannot find transform for level")
 
-        // todo: generate pickups
+            val map = javaClass.classLoader
+                .getResource("map.txt")
+                ?.readText()
+                ?.lines()
+                ?.map { it.toList() }
+                ?: error("Failed to load map.txt")
 
-        // todo: Add ghosts
+            map.forEachIndexed { rowIndex, row ->
+                val y = (14 * 8f) - (rowIndex * 8f)
+                row.forEachIndexed { columnIndex, tile ->
+                    val x = (columnIndex * 8f) - (14 * 8f)
+                    val position = transform.position + Vector3f(x = x, y = y)
+                    createTile(tile, position)
+                }
+            }
 
-        // todo: Add character
+            level.isLevelGenerated = true
+        }
+    }
 
-        // todo: Unregister self
+    private fun createTile(character: Char, position: Vector3f) {
+        when(character) {
+            'a' -> createWall(position, 1, 3)
+            'b' -> createWall(position, 0, 3)
+            'c' -> createWall(position, 5, 3)
+            'd' -> createWall(position, 4, 3)
+            '0' -> createWall(position, 12, 5)
+            '|' -> createWall(position, 3, 3)
+            '-' -> createWall(position, 10, 3)
+            '_' -> createWall(position, 12, 3)
+            '!' -> createWall(position, 2, 3)
+            '^' -> createWall(position, 14, 3)
+            'l' -> createWall(position, 8, 4)
+            'i' -> createWall(position, 9, 4)
+            '~' -> createWall(position, 4, 4)
+            'e' -> createWall(position, 7, 5)
+            'f' -> createWall(position, 6, 5)
+            'g' -> createWall(position, 9, 5)
+            'h' -> createWall(position, 8, 5)
+            'q' -> createWall(position, 10, 5)
+            'r' -> createWall(position, 11, 5)
+            's' -> createWall(position, 2, 5)
+            't' -> createWall(position, 3, 5)
+            'u' -> createWall(position, 4, 5)
+            'v' -> createWall(position, 5, 5)
+            'w' -> createWall(position, 6, 3)
+            'x' -> createWall(position, 7, 3)
+            'y' -> createWall(position, 8, 3)
+            'z' -> createWall(position, 9, 3)
+            '1' -> createWall(position, 0, 5)
+            '2' -> createWall(position, 1, 5)
+            '3' -> createWall(position, 12, 4)
+            '4' -> createWall(position, 13, 4)
+            '5' -> createWall(position, 14, 4)
+            '6' -> createWall(position, 15, 4)
+            '.' -> createWalkable(position, 12, 5)
+            '*' -> createWalkable(position, 15, 5)
+            ' ' -> createWalkable(position, 13, 5)
+            '+' -> createSpawnable(position, 12, 5)
+            '@' -> createSpawnable(position, 12, 5)
+            '&' -> createSpawnable(position, 12, 5)
+            else -> error("unhandled map tile: $character")
+        }
+    }
+
+    private fun createWall(position: Vector3f, x: Int, y: Int) {
+        ECS.createEntity(
+            WallCreator(
+                position, x, y
+            )::onCreate
+        )
+    }
+
+    private fun createWalkable(position: Vector3f, x: Int, y: Int) {
+        ECS.createEntity(
+            WalkableTile(
+                position, x, y
+            )::onCreate
+        )
+    }
+
+    private fun createSpawnable(position: Vector3f, x: Int, y: Int) {
+        ECS.createEntity(
+            WalkableTile(
+                position, x, y
+            )::onCreate
+        )
     }
 }
