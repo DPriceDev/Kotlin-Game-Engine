@@ -7,17 +7,16 @@ import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.Vector3f
 import dev.dprice.game.engine.util.SparseArray
 import dev.dprice.game.entities.character.Character
-import dev.dprice.game.entities.walls.WalkableTile
-import dev.dprice.game.entities.walls.WallCreator
+import dev.dprice.game.entities.tiles.*
 
 class MazeGeneratorSystem(
-    private val levelComponents: SparseArray<LevelComponent>,
+    private val mazeComponents: SparseArray<MazeComponent>,
     private val transformComponents: SparseArray<TransformComponent>
 ) : System {
 
     override fun run(timeSinceLast: Double) {
 
-        levelComponents.filter { !it.isLevelGenerated }.forEach { level ->
+        mazeComponents.filter { !it.isMazeGenerated }.forEach { level ->
             val transform = transformComponents.get(level) ?: error("Cannot find transform for level")
 
             val map = javaClass.classLoader
@@ -36,9 +35,13 @@ class MazeGeneratorSystem(
                 }
             }
 
-            ECS.createEntity(Character()::onCreate)
+            ECS.createEntity(
+                Character(
+                    Vector3f(y = -(8f * 9))
+                )::onCreate
+            )
 
-            level.isLevelGenerated = true
+            level.isMazeGenerated = true
         }
     }
 
@@ -80,16 +83,16 @@ class MazeGeneratorSystem(
             '.' -> createWalkable(position, 12, 5)
             '*' -> createWalkable(position, 15, 5)
             ' ' -> createWalkable(position, 13, 5)
-            '+' -> createSpawnable(position, 12, 5)
-            '@' -> createSpawnable(position, 12, 5)
-            '&' -> createSpawnable(position, 12, 5)
+            '+' -> createAISpawnable(position, 12, 5)
+            '@' -> createPlayerSpawnable(position, 12, 5)
+            '&' -> createFruitSpawnable(position, 12, 5)
             else -> error("unhandled map tile: $character")
         }
     }
 
     private fun createWall(position: Vector3f, x: Int, y: Int) {
         ECS.createEntity(
-            WallCreator(
+            WallTile(
                 position, x, y
             )::onCreate
         )
@@ -103,9 +106,25 @@ class MazeGeneratorSystem(
         )
     }
 
-    private fun createSpawnable(position: Vector3f, x: Int, y: Int) {
+    private fun createAISpawnable(position: Vector3f, x: Int, y: Int) {
         ECS.createEntity(
-            WalkableTile(
+            AIHomeTile(
+                position, x, y
+            )::onCreate
+        )
+    }
+
+    private fun createPlayerSpawnable(position: Vector3f, x: Int, y: Int) {
+        ECS.createEntity(
+            PlayerSpawnTile(
+                position, x, y
+            )::onCreate
+        )
+    }
+
+    private fun createFruitSpawnable(position: Vector3f, x: Int, y: Int) {
+        ECS.createEntity(
+            FruitSpawnTile(
                 position, x, y
             )::onCreate
         )

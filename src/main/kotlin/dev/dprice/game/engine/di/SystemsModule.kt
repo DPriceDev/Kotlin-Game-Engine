@@ -16,6 +16,7 @@ import dev.dprice.game.engine.input.model.Input
 import dev.dprice.game.engine.util.SparseArray
 import dev.dprice.game.entities.character.CharacterComponent
 import dev.dprice.game.entities.character.CharacterSystem
+import dev.dprice.game.entities.navigation.NavigatorComponent
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -68,7 +69,8 @@ val systemsModule = module {
         CharacterSystem(
             get(named<CharacterComponent>()),
             get(named<InputComponent<Input>>()),
-            get(named<TransformComponent>())
+            get(named<TransformComponent>()),
+            get(named<NavigatorComponent>())
         )
     } bind System::class
 

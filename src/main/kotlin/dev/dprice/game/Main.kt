@@ -3,14 +3,14 @@ package dev.dprice.game
 import dev.dprice.game.di.gameModule
 import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorSystem
-import dev.dprice.game.engine.ecs.systems.camera.FollowCamera2DSystem
 import dev.dprice.game.engine.ecs.systems.input.InputSystem
 import dev.dprice.game.engine.ecs.systems.sprite.SpriteSystem
 import dev.dprice.game.engine.input.model.InputAction
 import dev.dprice.game.engine.runGame
 import dev.dprice.game.entities.character.*
-import dev.dprice.game.entities.level.LevelCreator
+import dev.dprice.game.entities.level.Maze
 import dev.dprice.game.entities.level.MazeGeneratorSystem
+import dev.dprice.game.entities.navigation.NavigationSystem
 import org.lwjgl.glfw.GLFW.*
 
 fun main(args: Array<String>) {
@@ -21,15 +21,17 @@ fun main(args: Array<String>) {
         }
 
         ecs {
-            registerSystem<SpriteSystem>()
             registerSystem<InputSystem>()
-            registerSystem<FollowCamera2DSystem>()
-            registerSystem<CharacterSystem>()
+
+            registerSystem<NavigationSystem>()
             registerSystem<MazeGeneratorSystem>()
+            registerSystem<CharacterSystem>()
+
+            registerSystem<SpriteSystem>()
             registerSystem<SpriteAnimatorSystem>()
             //todo: ordering systems? registerSystem<SpriteSystem>(after = InputSystem)
 
-            createEntity(LevelCreator()::onCreate)
+            createEntity(Maze()::onCreate)
 
             // todo: Create map generator entity
 

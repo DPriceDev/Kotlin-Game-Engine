@@ -9,6 +9,8 @@ import dev.dprice.game.engine.ecs.systems.sprite.SpriteComponent
 import dev.dprice.game.engine.ecs.systems.sprite.Texture
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.input.model.Input
+import dev.dprice.game.engine.model.Vector3f
+import dev.dprice.game.entities.navigation.NavigatorComponent
 import org.koin.core.annotation.Single
 
 object MoveUp : Input
@@ -17,11 +19,14 @@ object MoveLeft : Input
 object MoveRight : Input
 
 @Single
-class Character : EntityCreator {
+class Character(
+    private val spawnPosition: Vector3f = Vector3f()
+) : EntityCreator {
 
     override fun onCreate(entity: Entity) {
-        createComponent(entity, TransformComponent(entity))
+        createComponent(entity, TransformComponent(entity, position = spawnPosition))
         createComponent(entity, CharacterComponent(entity))
+        createComponent(entity, NavigatorComponent(entity))
         createComponent(
             entity,
             SpriteComponent(
