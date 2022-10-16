@@ -7,6 +7,7 @@ import dev.dprice.game.engine.ecs.systems.sprite.SpriteSystem
 import dev.dprice.game.engine.input.model.InputAction
 import dev.dprice.game.engine.runGame
 import dev.dprice.game.entities.character.*
+import dev.dprice.game.entities.walls.WallEntity
 import org.lwjgl.glfw.GLFW.*
 
 fun main(args: Array<String>) {
@@ -19,6 +20,7 @@ fun main(args: Array<String>) {
             //todo: ordering systems? registerSystem<SpriteSystem>(after = InputSystem)
 
             createEntity(Character()::onCreate)
+            createEntity(WallEntity()::onCreate)
 
             // todo: Create map generator entity
 

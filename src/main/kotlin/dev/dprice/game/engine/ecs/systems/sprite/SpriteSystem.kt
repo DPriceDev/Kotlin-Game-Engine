@@ -10,8 +10,7 @@ import dev.dprice.game.engine.model.*
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*
-import org.lwjgl.stb.STBImage.stbi_image_free
-import org.lwjgl.stb.STBImage.stbi_load
+import org.lwjgl.stb.STBImage.*
 import java.nio.file.Paths
 
 class SpriteSystem(
@@ -53,6 +52,12 @@ class SpriteSystem(
         return fustrumTransform * viewTransform
     }
 
+    data class LoadedTexture(
+        val id: Int,
+        val width: Int,
+        val height: Int
+    )
+
     private fun drawToScreen(
         sprite: SpriteComponent,
         transform: TransformComponent,
@@ -70,10 +75,17 @@ class SpriteSystem(
         program.setMatrix4f("world", worldTransform.asFloatArray())
         program.setMatrix4f("view", cameraTransform.asFloatArray())
 
-        // setup vbo and vao and elo
-        val (vao, vbo, ebo) = generateSprite()
+        val texture = loadTexture(sprite.texture.path)
 
-        val texture = loadTexture(sprite.texturePath)
+        val vertices = when(sprite.texture) {
+            is Texture.Full -> quadVerticesAndCoords
+            is Texture.TileMap -> getTileMapVertices(texture, sprite.texture, quadVertices)
+        }
+
+        // setup vbo and vao and elo
+        val (vao, vbo, ebo) = generateSprite(vertices)
+
+        bindTextureCoordinates()
 
         // draw sprite to screen
         renderToScreen(vao)
@@ -88,16 +100,20 @@ class SpriteSystem(
         glDeleteVertexArrays(vao)
         GL15.glDeleteBuffers(vbo)
         GL15.glDeleteBuffers(ebo)
-        GL11.glDeleteTextures(texture)
+        GL11.glDeleteTextures(texture.id)
     }
 
-    private fun generateSprite(): SpriteOutput {
+    private fun bindTextureCoordinates() {
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.SIZE_BYTES, 3L * Float.SIZE_BYTES)
+    }
+
+    private fun generateSprite(vertices: FloatArray): SpriteOutput {
         val vao = glGenVertexArrays()
         glBindVertexArray(vao)
 
         val vbo = glGenBuffers()
         glBindBuffer(GL_ARRAY_BUFFER, vbo)
-        glBufferData(GL_ARRAY_BUFFER, quadVertices, GL_STATIC_DRAW)
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
 
         val ebo = glGenBuffers()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
@@ -108,31 +124,58 @@ class SpriteSystem(
         return SpriteOutput(vao, vbo, ebo)
     }
 
-    private fun loadTexture(textureFile: String): Int {
+    private fun getTileMapVertices(
+        loadedTexture: LoadedTexture,
+        tileMapTexture: Texture.TileMap,
+        quadVertices: FloatArray
+    ): FloatArray {
+
+        val xPercent = tileMapTexture.tileWidth.toFloat() / loadedTexture.width
+        val yPercent = tileMapTexture.tileHeight.toFloat() / loadedTexture.height
+
+        val xIndex = (tileMapTexture.tileIndex + 1) * xPercent
+        val yIndex = yPercent
+
+        return floatArrayOf(
+            0.5f, 0.5f, 0.0f, xIndex, 1f, // top right
+            0.5f, -0.5f, 0.0f, xIndex, 1f - yIndex,  // bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 1f - yIndex, // bottom left
+            -0.5f, 0.5f, 0.0f, 0.0f, 1f,   // top left
+        )
+//
+//        return floatArrayOf(
+//            0.5f, 0.5f, 0.0f, 1.0f, 1.0f, // top right
+//            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
+//            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
+//            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,   // top left
+//        )
+    }
+
+    private fun loadTexture(textureFile: String): LoadedTexture {
         val texture = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, texture)
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
         val x = IntArray(1)
         val y = IntArray(1)
         val nrChannels = IntArray(1)
         val texturePath = Paths.get("").toAbsolutePath().toString() + "/src/main/resources" + textureFile
+        stbi_set_flip_vertically_on_load(true)
         val data = stbi_load(texturePath, x, y, nrChannels, 0)
 
         data?.let {
+            // todo: Find a way to swap channels from rgb to rgba
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x[0], y[0], 0, GL_RGB, GL_UNSIGNED_BYTE, it)
             glGenerateMipmap(GL_TEXTURE_2D)
 
             stbi_image_free(it)
         } ?: error("Failed to load texture")
 
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.SIZE_BYTES, 3L * Float.SIZE_BYTES)
-
-        return texture
+        return LoadedTexture(texture, x.first(), y.first())
     }
 
     private fun renderToScreen(vao: Int) {
@@ -150,12 +193,21 @@ class SpriteSystem(
     data class SpriteOutput(val vao: Int, val vbo: Int, val ebo: Int)
 
     companion object {
-        private val quadVertices = floatArrayOf(
+        // todo: move to method to add texture coords from sprite map
+        private val quadVerticesAndCoords = floatArrayOf(
             0.5f, 0.5f, 0.0f, 1.0f, 1.0f, // top right
             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
             -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
             -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,   // top left
         )
+
+        private val quadVertices = floatArrayOf(
+            0.5f, 0.5f, 0.0f, // top right
+            0.5f, -0.5f, 0.0f, // bottom right
+            -0.5f, -0.5f, 0.0f, // bottom left
+            -0.5f, 0.5f, 0.0f, // top left
+        )
+
         private val quadTriangleIndices = intArrayOf(
             0, 1, 3,   // first triangle
             1, 2, 3    // second triangle
