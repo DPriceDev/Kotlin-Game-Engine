@@ -14,6 +14,7 @@ import dev.dprice.game.engine.ecs.systems.sprite.SpriteSystem
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.input.model.Input
 import dev.dprice.game.engine.util.SparseArray
+import dev.dprice.game.entities.character.CharacterComponent
 import dev.dprice.game.entities.character.CharacterSystem
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -26,6 +27,7 @@ val componentsModule = module {
     single(named<InputComponent<Input>>()) { SparseArray<InputComponent<Input>>() }
     single(named<PhysicsComponent>()) { SparseArray<PhysicsComponent>() }
     single(named<SpriteAnimatorComponent>()) { SparseArray<SpriteAnimatorComponent>() }
+    single(named<CharacterComponent>()) { SparseArray<CharacterComponent>() } // todo: move
 }
 
 val systemsModule = module {
@@ -61,8 +63,10 @@ val systemsModule = module {
         )
     } bind System::class
 
+    // todo: move
     single {
         CharacterSystem(
+            get(named<CharacterComponent>()),
             get(named<InputComponent<Input>>()),
             get(named<TransformComponent>())
         )

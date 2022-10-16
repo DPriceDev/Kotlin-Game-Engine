@@ -10,7 +10,7 @@ import dev.dprice.game.entities.character.Character
 import dev.dprice.game.entities.walls.WalkableTile
 import dev.dprice.game.entities.walls.WallCreator
 
-class LevelGeneratorSystem(
+class MazeGeneratorSystem(
     private val levelComponents: SparseArray<LevelComponent>,
     private val transformComponents: SparseArray<TransformComponent>
 ) : System {

@@ -10,7 +10,7 @@ import dev.dprice.game.engine.input.model.InputAction
 import dev.dprice.game.engine.runGame
 import dev.dprice.game.entities.character.*
 import dev.dprice.game.entities.level.LevelCreator
-import dev.dprice.game.entities.level.LevelGeneratorSystem
+import dev.dprice.game.entities.level.MazeGeneratorSystem
 import org.lwjgl.glfw.GLFW.*
 
 fun main(args: Array<String>) {
@@ -25,13 +25,11 @@ fun main(args: Array<String>) {
             registerSystem<InputSystem>()
             registerSystem<FollowCamera2DSystem>()
             registerSystem<CharacterSystem>()
-            registerSystem<LevelGeneratorSystem>()
+            registerSystem<MazeGeneratorSystem>()
             registerSystem<SpriteAnimatorSystem>()
             //todo: ordering systems? registerSystem<SpriteSystem>(after = InputSystem)
 
-            //createEntity(Character()::onCreate)
             createEntity(LevelCreator()::onCreate)
-            //createEntity(WallCreator()::onCreate)
 
             // todo: Create map generator entity
 

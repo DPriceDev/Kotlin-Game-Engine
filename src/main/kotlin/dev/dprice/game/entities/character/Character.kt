@@ -21,6 +21,7 @@ class Character : EntityCreator {
 
     override fun onCreate(entity: Entity) {
         createComponent(entity, TransformComponent(entity))
+        createComponent(entity, CharacterComponent(entity))
         createComponent(
             entity,
             SpriteComponent(
