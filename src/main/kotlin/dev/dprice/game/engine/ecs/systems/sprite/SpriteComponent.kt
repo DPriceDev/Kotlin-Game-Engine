@@ -11,7 +11,9 @@ sealed class Texture {
         override val path: String,
         val tileWidth: Int,
         val tileHeight: Int,
-        val tileIndex: Int
+        val xIndex: Int,
+        val yIndex: Int,
+        val spacing: Int = 0
     ) : Texture()
 }
 

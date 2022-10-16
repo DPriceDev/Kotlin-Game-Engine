@@ -66,26 +66,32 @@ class SpriteSystem(
         val program = shaderRepository.getShaderProgram(sprite.vertexShader, sprite.fragmentShader)
         program.use()
 
-        val worldTransform = Matrix4f.identity()
-            .translate(transform.position)
-            .scale(transform.scale)
-            .rotate(transform.rotation)
-
-        // apply otho or perspective camera?
-        program.setMatrix4f("world", worldTransform.asFloatArray())
-        program.setMatrix4f("view", cameraTransform.asFloatArray())
-
         val texture = loadTexture(sprite.texture.path)
 
         val vertices = when(sprite.texture) {
             is Texture.Full -> quadVerticesAndCoords
-            is Texture.TileMap -> getTileMapVertices(texture, sprite.texture, quadVertices)
+            is Texture.TileMap -> getTileMapVertices(texture, sprite.texture)
+        }
+
+        val (width, height) = when(sprite.texture) {
+            is Texture.Full -> texture.width to texture.height
+            is Texture.TileMap -> sprite.texture.tileWidth to sprite.texture.tileHeight
         }
 
         // setup vbo and vao and elo
         val (vao, vbo, ebo) = generateSprite(vertices)
 
         bindTextureCoordinates()
+
+        val worldTransform = Matrix4f.identity()
+            .translate(transform.position)
+            .scale(Vector3f(x = width.toFloat(), y = height.toFloat()))
+            .scale(transform.scale)
+            .rotate(transform.rotation)
+
+        // apply otho or perspective camera?
+        program.setMatrix4f("world", worldTransform.asFloatArray())
+        program.setMatrix4f("view", cameraTransform.asFloatArray())
 
         // draw sprite to screen
         renderToScreen(vao)
@@ -126,29 +132,29 @@ class SpriteSystem(
 
     private fun getTileMapVertices(
         loadedTexture: LoadedTexture,
-        tileMapTexture: Texture.TileMap,
-        quadVertices: FloatArray
+        tileMapTexture: Texture.TileMap
     ): FloatArray {
-
         val xPercent = tileMapTexture.tileWidth.toFloat() / loadedTexture.width
         val yPercent = tileMapTexture.tileHeight.toFloat() / loadedTexture.height
 
-        val xIndex = (tileMapTexture.tileIndex + 1) * xPercent
-        val yIndex = yPercent
+        val xSpacing = tileMapTexture.spacing.takeIf { it > 0 }?.let {
+            tileMapTexture.xIndex * (it / loadedTexture.width.toFloat())
+        } ?: 0f
+        val ySpacing = tileMapTexture.spacing.takeIf { it > 0 }?.let {
+            tileMapTexture.yIndex * (it / loadedTexture.height.toFloat())
+        } ?: 0f
+
+        val left = (tileMapTexture.xIndex) * xPercent + xSpacing
+        val right = (tileMapTexture.xIndex + 1) * xPercent + xSpacing
+        val top = 1f - (tileMapTexture.yIndex * yPercent + ySpacing)
+        val bottom = 1f - ((tileMapTexture.yIndex + 1) * yPercent + ySpacing)
 
         return floatArrayOf(
-            0.5f, 0.5f, 0.0f, xIndex, 1f, // top right
-            0.5f, -0.5f, 0.0f, xIndex, 1f - yIndex,  // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 1f - yIndex, // bottom left
-            -0.5f, 0.5f, 0.0f, 0.0f, 1f,   // top left
+            0.5f, 0.5f, 0.0f, right, top, // top right
+            0.5f, -0.5f, 0.0f, right, bottom,  // bottom right
+            -0.5f, -0.5f, 0.0f, left, bottom, // bottom left
+            -0.5f, 0.5f, 0.0f, left, top,   // top left
         )
-//
-//        return floatArrayOf(
-//            0.5f, 0.5f, 0.0f, 1.0f, 1.0f, // top right
-//            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
-//            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-//            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,   // top left
-//        )
     }
 
     private fun loadTexture(textureFile: String): LoadedTexture {
@@ -168,8 +174,8 @@ class SpriteSystem(
         val data = stbi_load(texturePath, x, y, nrChannels, 0)
 
         data?.let {
-            // todo: Find a way to swap channels from rgb to rgba
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x[0], y[0], 0, GL_RGB, GL_UNSIGNED_BYTE, it)
+            val format = if (nrChannels.first() == 4) GL_RGBA else GL_RGB
+            glTexImage2D(GL_TEXTURE_2D, 0, format, x[0], y[0], 0, format, GL_UNSIGNED_BYTE, it)
             glGenerateMipmap(GL_TEXTURE_2D)
 
             stbi_image_free(it)
