@@ -4,14 +4,41 @@ import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.ecs.model.Entity
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.util.SparseArray
+import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.reflect.KClass
 
-// todo: Replace with just the sparse array?
-data class ComponentCollection<T: Component>(
-    val components: SparseArray<T> = SparseArray(),
-)
+interface EntityManager {
+    fun createEntity() : Entity
+
+    fun removeEntity(entity: Entity)
+}
+
+@Single
+class EntityManagerImpl : EntityManager {
+    private var currentMaxEntity = 0
+    private val returnedEntities = mutableSetOf<Int>()
+
+    override fun createEntity(): Entity {
+        return if (returnedEntities.isEmpty()) {
+            currentMaxEntity++
+            Entity(currentMaxEntity - 1)
+        } else {
+            val id = returnedEntities.first()
+            returnedEntities.remove(id)
+            Entity(id)
+        }
+    }
+
+    override fun removeEntity(entity: Entity) {
+        if (entity.id == currentMaxEntity) {
+            currentMaxEntity--
+        } else {
+            returnedEntities.add(entity.id)
+        }
+    }
+}
 
 // todo: Move to injectable object?
 object ECS : KoinComponent {
@@ -20,32 +47,30 @@ object ECS : KoinComponent {
     private val systems: MutableList<System> = mutableListOf()
 
     // todo: Split out?
-    private val components: List<ComponentCollection<Component>> by inject()
+    private val components: List<SparseArray<Component>> by inject()
 
-    // todo: Move to entity manager that just handles unused ids
-    private val entities: MutableList<Entity> = mutableListOf()
+    private val entityManager: EntityManager by inject()
 
     fun run(timeSinceLast: Double) {
         systems.forEach { it.run(timeSinceLast) }
     }
 
+    // todo: Switch to a dsl
     fun createEntity(builder: (Entity) -> Unit) {
-        val entity = Entity(1)
+        val entity = entityManager.createEntity()
 
         builder(entity)
-
-        entities.add(entity)
     }
 
-    fun deleteEntity(id: Int) {
-        deleteComponents(id)
 
-        entities.removeIf { it.id == id }
+    fun deleteEntity(entity: Entity) {
+        deleteComponents(entity.id)
+        entityManager.removeEntity(entity)
     }
 
     private fun deleteComponents(id: Int) {
         components.forEach { collection ->
-            collection.components.remove(id)
+            collection.remove(id)
         }
     }
 

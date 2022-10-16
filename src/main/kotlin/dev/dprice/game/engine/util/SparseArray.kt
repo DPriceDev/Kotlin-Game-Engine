@@ -1,6 +1,6 @@
 package dev.dprice.game.engine.util
 
-class SparseArray<T> : Collection<T> {
+open class SparseArray<T> : Collection<T> {
     private var mappings: List<IntRange> = emptyList()
     private var contents: List<T> = emptyList()
 

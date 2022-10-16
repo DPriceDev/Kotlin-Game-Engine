@@ -17,6 +17,8 @@ sealed class Texture {
     ) : Texture()
 }
 
+// todo: Split into sprite and tileMapSprite
+// todo: Make animation component for tileMap sprites
 class SpriteComponent(
     override val entity: Entity,
     val texture: Texture,

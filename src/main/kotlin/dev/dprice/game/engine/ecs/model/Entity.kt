@@ -1,6 +1,6 @@
 package dev.dprice.game.engine.ecs.model
 
-import dev.dprice.game.engine.ecs.ComponentCollection
+import dev.dprice.game.engine.util.SparseArray
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
@@ -14,7 +14,7 @@ interface EntityCreator: KoinComponent {
 }
 
 inline fun <reified T : Component> EntityCreator.createComponent(entity: Entity, component: T) : T {
-    val collection: ComponentCollection<T> by inject(named<T>())
-    collection.components.add(entity.id, component)
+    val collection: SparseArray<T> by inject(named<T>())
+    collection.add(entity.id, component)
     return component
 }

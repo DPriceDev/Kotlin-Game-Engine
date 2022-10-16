@@ -1,12 +1,12 @@
 package dev.dprice.game.engine.ecs.systems.sprite
 
-import dev.dprice.game.engine.ecs.ComponentCollection
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.ecs.systems.camera.Camera2DComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.graphics.ShaderRepository
 import dev.dprice.game.engine.graphics.util.orthographicMatrix
 import dev.dprice.game.engine.model.*
+import dev.dprice.game.engine.util.SparseArray
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*
@@ -14,19 +14,19 @@ import org.lwjgl.stb.STBImage.*
 import java.nio.file.Paths
 
 class SpriteSystem(
-    private val sprites: ComponentCollection<SpriteComponent>,
-    private val transforms: ComponentCollection<TransformComponent>,
-    private val cameras: ComponentCollection<Camera2DComponent>,
+    private val sprites: SparseArray<SpriteComponent>,
+    private val transforms: SparseArray<TransformComponent>,
+    private val cameras: SparseArray<Camera2DComponent>,
     private val shaderRepository: ShaderRepository
 ) : System {
 
     override fun run(timeSinceLast: Double) {
 
-        cameras.components.forEach { camera ->
+        cameras.forEach { camera ->
             val cameraTransform = camera.getCameraTransform()
 
-            sprites.components.forEach { sprite ->
-                val transform = transforms.components
+            sprites.forEach { sprite ->
+                val transform = transforms
                     .getOrNull(sprite.entity.id)
                     ?: error("cannot find transform for sprite") // todo: maybe just skip?
 

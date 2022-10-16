@@ -10,7 +10,7 @@ import dev.dprice.game.engine.model.Vector3f
 import org.koin.core.annotation.Single
 
 @Single
-class WallEntity : EntityCreator {
+class WallCreator : EntityCreator {
 
     override fun onCreate(entity: Entity) {
         createComponent(entity, TransformComponent(entity, scale = Vector3f(10f, 10f)))
