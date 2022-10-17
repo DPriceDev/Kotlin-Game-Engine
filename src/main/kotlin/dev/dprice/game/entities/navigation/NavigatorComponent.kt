@@ -9,5 +9,6 @@ data class NavigatorComponent(
     var direction: Direction = Direction.RIGHT,
     var availableDirections: List<Direction> = emptyList(),
     var searchDistance: Float = 8.5f,
-    val canUseAISpaces: Boolean = false
+    val canUseAISpaces: Boolean = false,
+    val movementSpeed: Float = 50f
 ) : Component

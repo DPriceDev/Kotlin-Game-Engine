@@ -9,6 +9,8 @@ import dev.dprice.game.engine.ecs.systems.input.InputComponent
 import dev.dprice.game.engine.ecs.systems.input.InputSystem
 import dev.dprice.game.engine.ecs.systems.physics.PhysicsComponent
 import dev.dprice.game.engine.ecs.systems.physics.PhysicsSystem
+import dev.dprice.game.engine.ecs.systems.sound.SoundComponent
+import dev.dprice.game.engine.ecs.systems.sound.SoundSystem
 import dev.dprice.game.engine.ecs.systems.sprite.SpriteComponent
 import dev.dprice.game.engine.ecs.systems.sprite.SpriteSystem
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
@@ -29,6 +31,7 @@ val componentsModule = module {
     single(named<PhysicsComponent>()) { SparseArray<PhysicsComponent>() }
     single(named<SpriteAnimatorComponent>()) { SparseArray<SpriteAnimatorComponent>() }
     single(named<CharacterComponent>()) { SparseArray<CharacterComponent>() } // todo: move
+    single(named<SoundComponent>()) { SparseArray<SoundComponent>() }
 }
 
 val systemsModule = module {
@@ -78,6 +81,12 @@ val systemsModule = module {
         SpriteAnimatorSystem(
             get(named<SpriteComponent>()),
             get(named<SpriteAnimatorComponent>())
+        )
+    } bind System::class
+
+    single {
+        SoundSystem(
+            get(named<SoundComponent>())
         )
     } bind System::class
 }

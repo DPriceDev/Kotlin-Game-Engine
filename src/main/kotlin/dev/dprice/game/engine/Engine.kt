@@ -12,8 +12,12 @@ import org.koin.ksp.generated.module
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback
+import org.lwjgl.openal.AL
+import org.lwjgl.openal.ALC
+import org.lwjgl.openal.ALC10
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
+import java.nio.ByteBuffer
 
 fun runGame(setup: GameBuilder.() -> Unit) {
     GlobalContext.startKoin {
@@ -91,6 +95,8 @@ private fun gameLoop(window: Window) {
     // Bind LWJGL to the current opengl context
     GL.createCapabilities()
 
+    setupOpenAl()
+
     // Set clear colour, i.e. set background colour
     GL11.glClearColor(0.2f, 0.3f, 0.3f, 1.0f)
 
@@ -114,6 +120,15 @@ private fun gameLoop(window: Window) {
         // check for input events
         GLFW.glfwPollEvents()
     }
+}
+
+private fun setupOpenAl() {
+    val device: Long = ALC10.alcOpenDevice(null as ByteBuffer?)
+    val deviceCaps = ALC.createCapabilities(device)
+
+    val context: Long = ALC10.alcCreateContext(device, null as IntArray?)
+    ALC10.alcMakeContextCurrent(context)
+    AL.createCapabilities(deviceCaps)
 }
 
 private fun tearDownWindow(window: Window) {

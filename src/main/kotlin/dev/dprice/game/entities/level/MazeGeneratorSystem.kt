@@ -88,7 +88,7 @@ class MazeGeneratorSystem(
             '6' -> createWall(position, 15, 4)
             '.' -> createWalkable(position, 12, 5)
             '*' -> createWalkable(position, 15, 5)
-            ' ' -> createWalkable(position, 13, 5)
+            ' ' -> createPellet(position, 13, 5)
             '+' -> createAISpawnable(position, 12, 5)
             '@' -> createPlayerSpawnable(position, 12, 5)
             '&' -> createFruitSpawnable(position, 12, 5)
@@ -99,6 +99,14 @@ class MazeGeneratorSystem(
     private fun createWall(position: Vector3f, x: Int, y: Int) {
         ECS.createEntity(
             WallTile(
+                position, x, y
+            )::onCreate
+        )
+    }
+
+    private fun createPellet(position: Vector3f, x: Int, y: Int) {
+        ECS.createEntity(
+            PelletTile(
                 position, x, y
             )::onCreate
         )

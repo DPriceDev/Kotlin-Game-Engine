@@ -36,23 +36,25 @@ class NavigationSystem(
                 val angleY = difference.angleTo(Vector3f(y = 1f)).value
                 when {
                     difference == Vector3f() -> null
-                    angleX in -45f..45f -> Direction.RIGHT to difference
-                    angleX in 136f..180f || angleX in -180f..-136f -> Direction.LEFT to difference
-                    angleY in -45f..45f -> Direction.UP to difference
-                    angleY in 136f..180f || angleY in -180f..-136f  -> Direction.DOWN to difference
+                    angleX in -10f..10f -> Direction.RIGHT to difference
+                    angleX in 170f..180f || angleX in -180f..-170f -> Direction.LEFT to difference
+                    angleY in -10f..10f -> Direction.UP to difference
+                    angleY in 170f..180f || angleY in -180f..-170f  -> Direction.DOWN to difference
                     else -> null
                 }
             }
 
             navigator.availableDirections = availableDirections.map { it.first }
 
+            val speed = navigator.movementSpeed
+
             if (navigator.direction == Direction.RIGHT && navigator.availableDirections.contains(Direction.RIGHT)) {
                 val test = availableDirections
                     .filter { it.first == Direction.RIGHT }
                     .maxBy { (_, difference) -> abs(difference.length()) }
                 navigatorTransform.position = navigatorTransform.position + Vector3f(
-                    x = min(60f * timeSinceLast.toFloat(), test.second.length()),
-                    y = test.second.y.sign * min(60f * timeSinceLast.toFloat(), abs(test.second.y))
+                    x = min(speed * timeSinceLast.toFloat(), test.second.length()),
+                    y = test.second.y.sign * min(speed * timeSinceLast.toFloat(), abs(test.second.y))
                 )
             }
 
@@ -61,8 +63,8 @@ class NavigationSystem(
                     .filter { it.first == Direction.LEFT }
                     .maxBy { (_, difference) -> abs(difference.length()) }
                 navigatorTransform.position = navigatorTransform.position + Vector3f(
-                    x = -min(60f * timeSinceLast.toFloat(), test.second.length()),
-                    y = test.second.y.sign * min(60f * timeSinceLast.toFloat(), abs(test.second.y))
+                    x = -min(speed * timeSinceLast.toFloat(), test.second.length()),
+                    y = test.second.y.sign * min(speed * timeSinceLast.toFloat(), abs(test.second.y))
                 )
             }
 
@@ -71,8 +73,8 @@ class NavigationSystem(
                     .filter { it.first == Direction.UP }
                     .maxBy { (_, difference) -> abs(difference.length()) }
                 navigatorTransform.position = navigatorTransform.position + Vector3f(
-                    y = min(60f * timeSinceLast.toFloat(), test.second.length()),
-                    x = test.second.x.sign * min(60f * timeSinceLast.toFloat(), abs(test.second.x))
+                    y = min(speed * timeSinceLast.toFloat(), test.second.length()),
+                    x = test.second.x.sign * min(speed * timeSinceLast.toFloat(), abs(test.second.x))
                 )
             }
 
@@ -81,8 +83,8 @@ class NavigationSystem(
                     .filter { it.first == Direction.DOWN }
                     .maxBy { (_, difference) -> abs(difference.length()) }
                 navigatorTransform.position = navigatorTransform.position + Vector3f(
-                    y = -min(60f * timeSinceLast.toFloat(), test.second.length()),
-                    x = test.second.x.sign * min(60f * timeSinceLast.toFloat(), abs(test.second.x))
+                    y = -min(speed * timeSinceLast.toFloat(), test.second.length()),
+                    x = test.second.x.sign * min(speed * timeSinceLast.toFloat(), abs(test.second.x))
                 )
             }
         }

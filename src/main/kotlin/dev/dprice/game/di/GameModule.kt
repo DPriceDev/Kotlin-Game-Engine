@@ -2,8 +2,10 @@ package dev.dprice.game.di
 
 import dev.dprice.game.engine.ecs.model.System
 import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorComponent
+import dev.dprice.game.engine.ecs.systems.sprite.SpriteComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.util.SparseArray
+import dev.dprice.game.entities.character.CharacterComponent
 import dev.dprice.game.entities.enemy.EnemyComponent
 import dev.dprice.game.entities.enemy.EnemySystem
 import dev.dprice.game.entities.level.MazeComponent
@@ -11,6 +13,8 @@ import dev.dprice.game.entities.level.MazeGeneratorSystem
 import dev.dprice.game.entities.navigation.NavigatableComponent
 import dev.dprice.game.entities.navigation.NavigationSystem
 import dev.dprice.game.entities.navigation.NavigatorComponent
+import dev.dprice.game.entities.pickups.PickupComponent
+import dev.dprice.game.entities.pickups.PickupSystem
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -40,4 +44,14 @@ val gameModule = module {
             get(named<SpriteAnimatorComponent>())
         )
     } bind System::class
+
+    single(named<PickupComponent>()) { SparseArray<PickupComponent>() }
+    single {
+        PickupSystem(
+            get(named<PickupComponent>()),
+            get(named<CharacterComponent>()),
+            get(named<TransformComponent>()),
+            get(named<SpriteComponent>()),
+        )
+    }
 }

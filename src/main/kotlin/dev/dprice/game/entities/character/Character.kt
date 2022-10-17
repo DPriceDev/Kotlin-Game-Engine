@@ -5,6 +5,7 @@ import dev.dprice.game.engine.ecs.model.EntityCreator
 import dev.dprice.game.engine.ecs.model.createComponent
 import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorComponent
 import dev.dprice.game.engine.ecs.systems.input.InputComponent
+import dev.dprice.game.engine.ecs.systems.sound.SoundComponent
 import dev.dprice.game.engine.ecs.systems.sprite.SpriteComponent
 import dev.dprice.game.engine.ecs.systems.sprite.Texture
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
@@ -27,6 +28,7 @@ class Character(
         createComponent(entity, TransformComponent(entity, position = spawnPosition))
         createComponent(entity, CharacterComponent(entity))
         createComponent(entity, NavigatorComponent(entity))
+        createComponent(entity, SoundComponent(entity, "sound/pacman_chomp.wav", shouldPlay = true))
         createComponent(
             entity,
             SpriteComponent(
