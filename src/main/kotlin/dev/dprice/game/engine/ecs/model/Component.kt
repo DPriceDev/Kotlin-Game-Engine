@@ -1,12 +1,12 @@
 package dev.dprice.game.engine.ecs.model
 
-import dev.dprice.game.engine.util.SparseArray
+abstract class Component {
+    private var mutableEntity: Entity? = null
 
-interface Component {
     val entity: Entity
-}
+        get() = mutableEntity ?: error("Entity has not been set")
 
-// todo: move?
-fun <T: Component> SparseArray<T>.get(component: Component) : T? {
-    return getOrNull(component.entity.id)
+    fun Entity.setEntity() {
+        this@Component.mutableEntity = this
+    }
 }

@@ -1,6 +1,8 @@
 package dev.dprice.game.engine.ecs.model
 
-interface System {
+import org.koin.core.component.KoinComponent
 
-    fun run(timeSinceLast: Double)
-}
+interface System :
+    KoinComponent,
+    EntityProvider,
+    ComponentProvider

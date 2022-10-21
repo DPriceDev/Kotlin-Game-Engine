@@ -1,25 +1,20 @@
 package dev.dprice.game.engine.ecs.systems.camera
 
-import dev.dprice.game.engine.ecs.model.System
+import dev.dprice.game.engine.ecs.model.SystemProvider
+import dev.dprice.game.engine.ecs.model.registerSystem
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.lerpTo
+import dev.dprice.game.engine.ecs.model.getComponents
+import dev.dprice.game.engine.ecs.model.getComponent
 import dev.dprice.game.engine.model.negate
-import dev.dprice.game.engine.util.SparseArray
 
+fun SystemProvider.createFollowCamera2DSystem() = registerSystem<Camera2DComponent> { timeSinceLast ->
 
-class FollowCamera2DSystem(
-    private val transforms: SparseArray<TransformComponent>,
-    private val cameras: SparseArray<Camera2DComponent>
-) : System {
+    getComponents<Camera2DComponent>().forEach { camera ->
+        val transform = getComponent<TransformComponent>(camera)
+            ?: error("cannot find transform for camera") // todo: maybe just skip?
 
-    override fun run(timeSinceLast: Double) {
-        cameras.forEach { camera ->
-            val transform = transforms
-                .getOrNull(camera.entity.id)
-                ?: error("cannot find transform for camera") // todo: maybe just skip?
-
-            camera.target = camera.target
-                .lerpTo(transform.position.negate(), (timeSinceLast * 2f).toFloat())
-        }
+        camera.target = camera.target
+            .lerpTo(transform.position.negate(), (timeSinceLast * 2f).toFloat())
     }
 }

@@ -1,47 +1,47 @@
 package dev.dprice.game.entities.character
 
-import dev.dprice.game.engine.ecs.model.System
-import dev.dprice.game.engine.ecs.model.get
+import dev.dprice.game.engine.ecs.model.SystemProvider
+import dev.dprice.game.engine.ecs.model.registerSystem
 import dev.dprice.game.engine.ecs.systems.input.InputComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
-import dev.dprice.game.engine.input.model.Input
 import dev.dprice.game.engine.model.Degree
 import dev.dprice.game.engine.model.Rotation3f
-import dev.dprice.game.engine.util.SparseArray
 import dev.dprice.game.entities.navigation.NavigatorComponent
+import dev.dprice.game.engine.ecs.model.getComponents
+import dev.dprice.game.engine.ecs.model.getComponent
 
-class CharacterSystem(
-    private val characters: SparseArray<CharacterComponent>,
-    private val inputs: SparseArray<InputComponent<Input>>,
-    private val transforms: SparseArray<TransformComponent>,
-    private val navigators: SparseArray<NavigatorComponent>
-) : System {
+fun SystemProvider.createCharacterSystem() = registerSystem<CharacterComponent> {
 
-    override fun run(timeSinceLast: Double) {
-        characters.forEach { character ->
-            val transform = transforms.get(character) ?: error("transform not found for character")
-            val input = inputs.get(character) ?: error("input not found for character")
-            val navigator = navigators.get(character) ?: error("navigator not found in character")
+    getComponents<CharacterComponent>().forEach { character ->
+        val transform = getComponent<TransformComponent>(character) ?: error("transform not found for character")
+        val input = getComponent<InputComponent>(character) ?: error("input not found for character")
+        val navigator = getComponent<NavigatorComponent>(character) ?: error("navigator not found in character")
 
-            input.inputs.forEach {
-                character.direction = when {
-                    it == MoveUp && navigator.availableDirections.contains(Direction.UP) -> Direction.UP
-                    it == MoveDown && navigator.availableDirections.contains(Direction.DOWN) -> Direction.DOWN
-                    it == MoveLeft && navigator.availableDirections.contains(Direction.LEFT) -> Direction.LEFT
-                    it == MoveRight && navigator.availableDirections.contains(Direction.RIGHT) -> Direction.RIGHT
-                    else -> character.direction
-                }
+        input.inputs.forEach {
+            character.direction = when (it) {
+                is MoveUp -> if (it.isPressed) Direction.UP else null
+                is MoveDown -> if (it.isPressed) Direction.DOWN else null
+                is MoveLeft -> if (it.isPressed) Direction.LEFT else null
+                is MoveRight -> if (it.isPressed) Direction.RIGHT else null
+                else -> navigator.direction
             }
-
-            val rotation = when(character.direction) {
-                Direction.UP -> Rotation3f(yaw = Degree(90f))
-                Direction.DOWN -> Rotation3f(yaw = Degree(-90f))
-                Direction.LEFT -> Rotation3f(yaw = Degree(180f))
-                Direction.RIGHT -> Rotation3f(yaw = Degree(0f))
-            }
-
-            transform.rotation = rotation
-            navigator.direction = character.direction
         }
+
+        navigator.direction = when {
+            character.direction == Direction.UP && navigator.availableDirections.contains(Direction.UP) -> Direction.UP
+            character.direction == Direction.DOWN && navigator.availableDirections.contains(Direction.DOWN) -> Direction.DOWN
+            character.direction == Direction.LEFT && navigator.availableDirections.contains(Direction.LEFT) -> Direction.LEFT
+            character.direction == Direction.RIGHT && navigator.availableDirections.contains(Direction.RIGHT) -> Direction.RIGHT
+            else -> navigator.direction
+        }
+
+        val rotation = when (navigator.direction) {
+            Direction.UP -> Rotation3f(yaw = Degree(90f))
+            Direction.DOWN -> Rotation3f(yaw = Degree(-90f))
+            Direction.LEFT -> Rotation3f(yaw = Degree(180f))
+            Direction.RIGHT -> Rotation3f(yaw = Degree(0f))
+        }
+
+        transform.rotation = rotation
     }
 }

@@ -1,7 +1,6 @@
 package dev.dprice.game.engine.ecs.systems.sprite
 
 import dev.dprice.game.engine.ecs.model.Component
-import dev.dprice.game.engine.ecs.model.Entity
 
 sealed class Texture {
     abstract val path: String
@@ -20,9 +19,8 @@ sealed class Texture {
 // todo: Split into sprite and tileMapSprite
 // todo: Make animation component for tileMap sprites
 class SpriteComponent(
-    override val entity: Entity,
     val texture: Texture,
     val zDepth: Float = 0f,
     val vertexShader: String = "shaders/BasicVertexShader.glsl",
     val fragmentShader: String = "shaders/BasicFragmentShader.glsl",
-) : Component
+) : Component()

@@ -1,43 +1,39 @@
 package dev.dprice.game
 
-import dev.dprice.game.di.gameModule
-import dev.dprice.game.engine.ecs.registerSystem
-import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorSystem
-import dev.dprice.game.engine.ecs.systems.input.InputSystem
-import dev.dprice.game.engine.ecs.systems.sound.SoundSystem
-import dev.dprice.game.engine.ecs.systems.sprite.SpriteSystem
+import dev.dprice.game.engine.ecs.systems.animation.createSpriteAnimatorSystem
+import dev.dprice.game.engine.ecs.systems.input.createInputSystem
+import dev.dprice.game.engine.ecs.systems.sound.createSoundSystem
+import dev.dprice.game.engine.ecs.systems.sprite.createSpriteSystem
 import dev.dprice.game.engine.input.model.InputAction
 import dev.dprice.game.engine.runGame
 import dev.dprice.game.entities.character.*
-import dev.dprice.game.entities.enemy.EnemySystem
-import dev.dprice.game.entities.level.Maze
-import dev.dprice.game.entities.level.MazeGeneratorSystem
-import dev.dprice.game.entities.navigation.NavigationSystem
-import dev.dprice.game.entities.pickups.PickupSystem
+import dev.dprice.game.entities.enemy.createEnemySystem
+import dev.dprice.game.entities.level.createMaze
+import dev.dprice.game.entities.level.createMazeGeneratorSystem
+import dev.dprice.game.entities.navigation.createNavigationSystem
+import dev.dprice.game.entities.pickups.createPickUpSystem
 import org.lwjgl.glfw.GLFW.*
 
 fun main(args: Array<String>) {
     runGame {
 
-        koin {
-            loadModules(listOf(gameModule))
-        }
-
+        // todo: Change to setup method with system and entity providers?
         ecs {
-            registerSystem<InputSystem>()
 
-            registerSystem<NavigationSystem>()
-            registerSystem<MazeGeneratorSystem>()
-            registerSystem<CharacterSystem>()
-            registerSystem<EnemySystem>()
-            registerSystem<PickupSystem>()
-            registerSystem<SoundSystem>()
+            createInputSystem()
+            createSpriteSystem()
+            createNavigationSystem()
+            createMazeGeneratorSystem()
+            createCharacterSystem()
+            createEnemySystem()
 
-            registerSystem<SpriteSystem>()
-            registerSystem<SpriteAnimatorSystem>()
+            createPickUpSystem()
+            createSoundSystem()
+            
+            createSpriteAnimatorSystem()
             //todo: ordering systems? registerSystem<SpriteSystem>(after = InputSystem)
 
-            createEntity(Maze()::onCreate)
+            createMaze()
 
             // todo: Create map generator entity
 
@@ -49,10 +45,26 @@ fun main(args: Array<String>) {
         }
 
         input {
-            mapInputToAction(InputAction(GLFW_KEY_W, GLFW_PRESS)) { MoveUp }
-            mapInputToAction(InputAction(GLFW_KEY_S, GLFW_PRESS)) { MoveDown }
-            mapInputToAction(InputAction(GLFW_KEY_A, GLFW_PRESS)) { MoveLeft }
-            mapInputToAction(InputAction(GLFW_KEY_D, GLFW_PRESS)) { MoveRight }
+//            mapInputToAxis(
+//                MoveUpAxis,
+//                InputAction(GLFW_KEY_W, GLFW_PRESS) to { 1f },
+//                InputAction(GLFW_KEY_S, GLFW_PRESS) to { -1f },
+//            )
+
+//            mapInputToAxis(
+//                MoveRightAxis,
+//                GLFW_KEY_D to { 1f },
+//                GLFW_KEY_A to { -1f },
+//            )
+
+            mapInputToAction(InputAction(GLFW_KEY_W, GLFW_PRESS)) { MoveUp(true) }
+            mapInputToAction(InputAction(GLFW_KEY_W, GLFW_RELEASE)) { MoveUp(false) }
+            mapInputToAction(InputAction(GLFW_KEY_S, GLFW_PRESS)) { MoveDown(true) }
+            mapInputToAction(InputAction(GLFW_KEY_S, GLFW_RELEASE)) { MoveDown(false) }
+            mapInputToAction(InputAction(GLFW_KEY_A, GLFW_PRESS)) { MoveLeft(true) }
+            mapInputToAction(InputAction(GLFW_KEY_A, GLFW_RELEASE)) { MoveLeft(false) }
+            mapInputToAction(InputAction(GLFW_KEY_D, GLFW_PRESS)) { MoveRight(true) }
+            mapInputToAction(InputAction(GLFW_KEY_D, GLFW_RELEASE)) { MoveRight(false) }
         }
 
 // todo: Maybe register levels?

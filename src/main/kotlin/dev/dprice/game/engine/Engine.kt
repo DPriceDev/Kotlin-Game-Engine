@@ -1,8 +1,6 @@
 package dev.dprice.game.engine
 
 import dev.dprice.game.engine.di.EngineModule
-import dev.dprice.game.engine.di.componentsModule
-import dev.dprice.game.engine.di.systemsModule
 import dev.dprice.game.engine.ecs.ECS
 import dev.dprice.game.engine.graphics.model.Window
 import dev.dprice.game.engine.input.InputRepository
@@ -21,11 +19,7 @@ import java.nio.ByteBuffer
 
 fun runGame(setup: GameBuilder.() -> Unit) {
     GlobalContext.startKoin {
-        modules(
-            systemsModule,
-            EngineModule().module,
-            componentsModule
-        )
+        modules(EngineModule().module)
     }
 
     val inputRepository = GlobalContext.get().get<InputRepository>()

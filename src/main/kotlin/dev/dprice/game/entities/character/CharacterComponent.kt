@@ -1,7 +1,6 @@
 package dev.dprice.game.entities.character
 
 import dev.dprice.game.engine.ecs.model.Component
-import dev.dprice.game.engine.ecs.model.Entity
 
 enum class Direction {
     UP,
@@ -11,7 +10,6 @@ enum class Direction {
 }
 
 data class CharacterComponent(
-    override val entity: Entity,
-    var direction: Direction = Direction.RIGHT,
+    var direction: Direction? = null,
     val movementSpeed: Float = 60f
-) : Component
+) : Component()

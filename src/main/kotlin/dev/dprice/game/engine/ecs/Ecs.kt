@@ -1,9 +1,8 @@
 package dev.dprice.game.engine.ecs
 
-import dev.dprice.game.engine.ecs.model.Component
-import dev.dprice.game.engine.ecs.model.Entity
-import dev.dprice.game.engine.ecs.model.System
+import dev.dprice.game.engine.ecs.model.*
 import dev.dprice.game.engine.util.SparseArray
+import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -40,54 +39,95 @@ class EntityManagerImpl : EntityManager {
     }
 }
 
+@Single
+class ComponentRepositoryImpl : ComponentProvider {
+    private var components: MutableMap<KClass<*>, SparseArray<Component>> = mutableMapOf()
+
+    override fun <T : Component> getComponents(clazz: KClass<T>): SparseArray<T> {
+        return components
+            .filter { it.key == clazz }
+            .values
+            .filterIsInstance<SparseArray<T>>()
+            .firstOrNull()
+            ?: createNewComponentArray(clazz)
+    }
+
+    private fun <T: Component> createNewComponentArray(clazz: KClass<T>): SparseArray<T> {
+        val array = SparseArray<T>()
+        components[clazz] = (array as SparseArray<Component>)
+        return array
+    }
+
+    override fun <T : Component> getComponent(clazz: KClass<T>, component: Component) = getComponents(clazz).get(component)
+
+    override fun <T : Component> registerComponent(clazz: KClass<T>, component: T): T {
+        getComponents(clazz).apply {
+            add(component.entity.id, component)
+        }
+        return component
+    }
+}
+
 // todo: Move to injectable object?
-object ECS : KoinComponent {
+object ECS : KoinComponent, EntityProvider, SystemProvider, System /* todo: Switch to class that takes ecs? */ {
 
     // split out?
-    private val systems: MutableList<System> = mutableListOf()
+    private val systems: MutableMap<String, System.(Double) -> Unit> = mutableMapOf()
 
     // todo: Split out?
-    private val components: List<SparseArray<Component>> by inject()
+    private val components: List<SparseArray<Component>> by lazy { Koin().getAll() }
 
     private val entityManager: EntityManager by inject()
 
+    private val componentProvider: ComponentProvider by inject()
+
     fun run(timeSinceLast: Double) {
-        systems.forEach { it.run(timeSinceLast) }
-    }
-
-    // todo: Switch to a dsl
-    fun createEntity(builder: (Entity) -> Unit) {
-        val entity = entityManager.createEntity()
-
-        builder(entity)
-    }
-
-
-    fun deleteEntity(entity: Entity) {
-        deleteComponents(entity.id)
-        entityManager.removeEntity(entity)
-    }
-
-    private fun deleteComponents(id: Int) {
-        components.forEach { collection ->
-            collection.remove(id)
+        systems.values.forEach { system ->
+            system.invoke(this, timeSinceLast)
         }
     }
 
-    fun addSystem(system: System) : ECS {
-        systems.add(system)
-        return this
+    override fun createEntity(builder: EntityBuilder.() -> Unit): Entity {
+        val entity = entityManager.createEntity()
+
+        EntityBuilder().apply {
+            builder()
+            componentProvider.apply {
+                build(entity)
+            }
+        }
+
+        return entity
     }
 
-    fun <T: System> removeSystem(type: KClass<T>) : ECS {
-        systems.removeIf { type.isInstance(it) }
-        return this
+    override fun deleteEntity(entity: Entity) {
+        deleteComponents(entity)
+        entityManager.removeEntity(entity)
+    }
+
+    override fun <T : Component> registerComponent(clazz: KClass<T>, component: T): T {
+        return componentProvider.registerComponent(clazz, component)
+    }
+
+    private fun deleteComponents(entity: Entity) {
+        components.forEach { collection ->
+            collection.remove(entity.id)
+        }
+    }
+
+    override fun registerSystem(id: String, runner: System.(delta: Double) -> Unit) {
+        systems[id] = runner
+    }
+
+    override fun unregisterSystem(id: String) {
+        systems.remove(id)
+    }
+
+    override fun <T : Component> getComponent(clazz: KClass<T>, component: Component): T? {
+        return componentProvider.getComponent(clazz, component)
+    }
+
+    override fun <T: Component> getComponents(clazz: KClass<T>) : SparseArray<T> {
+        return componentProvider.getComponents(clazz)
     }
 }
-
-inline fun <reified T : System> ECS.registerSystem() : ECS {
-    val system: T by inject()
-    return addSystem(system = system)
-}
-
-inline fun <reified T : System> ECS.unregisterSystem() =  removeSystem(T::class)
