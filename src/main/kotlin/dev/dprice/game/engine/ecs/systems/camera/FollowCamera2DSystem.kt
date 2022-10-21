@@ -1,14 +1,14 @@
 package dev.dprice.game.engine.ecs.systems.camera
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.lerpTo
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.getComponent
 import dev.dprice.game.engine.model.negate
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createFollowCamera2DSystem() = registerSystem<Camera2DComponent> { timeSinceLast ->
+fun SystemRepository.createFollowCamera2DSystem() = registerSystem<Camera2DComponent> { timeSinceLast ->
 
     getComponents<Camera2DComponent>().forEach { camera ->
         val transform = getComponent<TransformComponent>(camera)

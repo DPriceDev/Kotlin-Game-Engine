@@ -1,7 +1,7 @@
 package dev.dprice.game.engine.ecs.systems.sprite
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.camera.Camera2DComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.graphics.LoadedTexture
@@ -12,10 +12,10 @@ import dev.dprice.game.engine.model.*
 import org.koin.core.component.inject
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.getComponent
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createSpriteSystem() = registerSystem<SpriteComponent> {
+fun SystemRepository.createSpriteSystem() = registerSystem<SpriteComponent> {
 
     getComponents<Camera2DComponent>().forEach { camera ->
         val cameraTransform = camera.getCameraTransform()

@@ -1,16 +1,16 @@
 package dev.dprice.game.entities.character
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.input.InputComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.Degree
 import dev.dprice.game.engine.model.Rotation3f
 import dev.dprice.game.entities.navigation.NavigatorComponent
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.getComponent
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createCharacterSystem() = registerSystem<CharacterComponent> {
+fun SystemRepository.createCharacterSystem() = registerSystem<CharacterComponent> {
 
     getComponents<CharacterComponent>().forEach { character ->
         val transform = getComponent<TransformComponent>(character) ?: error("transform not found for character")

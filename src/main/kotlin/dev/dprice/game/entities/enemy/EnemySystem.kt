@@ -1,16 +1,15 @@
 package dev.dprice.game.entities.enemy
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorComponent
 import dev.dprice.game.entities.character.Direction
 import dev.dprice.game.entities.navigation.NavigatorComponent
 import kotlin.math.max
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.getComponent
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createEnemySystem() = registerSystem<EnemyComponent> { timeSinceLast ->
-
+fun SystemRepository.createEnemySystem() = registerSystem<EnemyComponent> { timeSinceLast ->
 
     getComponents<EnemyComponent>().forEach { enemy ->
         val navigator = getComponent<NavigatorComponent>(enemy) ?: error("enemy has no navigator")

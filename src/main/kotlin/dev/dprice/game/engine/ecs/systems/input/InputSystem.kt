@@ -1,13 +1,12 @@
 package dev.dprice.game.engine.ecs.systems.input
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.input.InputRepository
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.getComponent
 import org.koin.core.component.inject
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createInputSystem() = registerSystem<InputComponent> {
+fun SystemRepository.createInputSystem() = registerSystem<InputComponent> {
     val inputRepository: InputRepository by inject()
     val inputs = inputRepository.getCurrentInputs() // todo: Could be grouped for quicker
     inputRepository.clearInputActions() // todo: Potentially could erase inputs by accident?

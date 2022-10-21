@@ -1,13 +1,13 @@
 package dev.dprice.game.engine.ecs.systems.physics
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.registerSystem
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.getComponent
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.input.InputComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createInputSystem() = registerSystem<InputComponent> {
+fun SystemRepository.createInputSystem() = registerSystem<InputComponent> {
     getComponents<PhysicsComponent>().forEach { physicsComponent ->
         val transformComponent = getComponent<TransformComponent>(physicsComponent)
             ?: error("No transform found") // todo: Skip

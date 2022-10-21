@@ -1,7 +1,7 @@
 package dev.dprice.game.entities.navigation
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.Vector3f
 import dev.dprice.game.engine.model.angleTo
@@ -9,11 +9,11 @@ import dev.dprice.game.engine.model.length
 import dev.dprice.game.entities.character.Direction
 import kotlin.math.abs
 import kotlin.math.min
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.getComponent
 import kotlin.math.sign
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createNavigationSystem() = registerSystem<NavigatorComponent> { timeSinceLast ->
+fun SystemRepository.createNavigationSystem() = registerSystem<NavigatorComponent> { timeSinceLast ->
 
     getComponents<NavigatorComponent>().forEach { navigator ->
         val navigatorTransform = getComponent<TransformComponent>(navigator) ?: error("navigator has no transform")

@@ -1,6 +1,6 @@
 package dev.dprice.game.entities.character
 
-import dev.dprice.game.engine.ecs.ECS.createEntity
+import dev.dprice.game.engine.ecs.interactors.EntityInteractor
 import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorComponent
 import dev.dprice.game.engine.ecs.systems.input.InputComponent
 import dev.dprice.game.engine.ecs.systems.sound.SoundComponent
@@ -16,7 +16,7 @@ data class MoveDown(val isPressed: Boolean) : Input
 data class MoveLeft(val isPressed: Boolean) : Input
 data class MoveRight(val isPressed: Boolean) : Input
 
-fun createCharacter(
+fun EntityInteractor.createCharacter(
     spawnPosition: Vector3f = Vector3f()
 ) = createEntity {
     registerComponent(TransformComponent(spawnPosition))

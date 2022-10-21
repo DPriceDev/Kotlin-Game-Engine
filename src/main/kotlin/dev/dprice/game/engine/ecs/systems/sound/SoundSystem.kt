@@ -1,8 +1,7 @@
 package dev.dprice.game.engine.ecs.systems.sound
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import org.lwjgl.BufferUtils
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openal.AL10.*
@@ -13,8 +12,9 @@ import java.nio.IntBuffer
 import java.nio.file.Paths
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem.getAudioInputStream
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createSoundSystem() = registerSystem<SoundComponent> {
+fun SystemRepository.createSoundSystem() = registerSystem<SoundComponent> {
 
     getComponents<SoundComponent>().filter { !it.isPlaying && it.shouldPlay }.forEach { sound ->
 

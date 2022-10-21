@@ -1,14 +1,16 @@
 package dev.dprice.game.engine.ecs.model
 
+import dev.dprice.game.engine.ecs.ComponentRepository
+import dev.dprice.game.engine.ecs.registerComponent
 import org.koin.core.component.KoinComponent
 
 @JvmInline
 value class Entity(val id: Int)
 
 class EntityBuilder : KoinComponent {
-    private val components: MutableList<ComponentProvider.(Entity) -> Component> = mutableListOf()
+    private val components: MutableList<ComponentRepository.(Entity) -> Component> = mutableListOf()
 
-    fun registerComponentBuilder(builder: ComponentProvider.(Entity) -> Component) {
+    fun registerComponentBuilder(builder: ComponentRepository.(Entity) -> Component) {
         components.add(builder)
     }
 
@@ -24,7 +26,7 @@ class EntityBuilder : KoinComponent {
         return component
     }
 
-    fun ComponentProvider.build(entity: Entity) {
+    fun ComponentRepository.build(entity: Entity) {
         components.forEach { it(entity) }
     }
 }

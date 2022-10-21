@@ -17,9 +17,7 @@ import org.lwjgl.glfw.GLFW.*
 fun main(args: Array<String>) {
     runGame {
 
-        // todo: Change to setup method with system and entity providers?
-        ecs {
-
+        level {
             createInputSystem()
             createSpriteSystem()
             createNavigationSystem()
@@ -29,19 +27,11 @@ fun main(args: Array<String>) {
 
             createPickUpSystem()
             createSoundSystem()
-            
+
             createSpriteAnimatorSystem()
             //todo: ordering systems? registerSystem<SpriteSystem>(after = InputSystem)
 
             createMaze()
-
-            // todo: Create map generator entity
-
-            // todo: Create enemy
-
-            // todo: Create pickup generator?
-
-            // todo: somehow signal start of game?
         }
 
         input {
@@ -66,27 +56,6 @@ fun main(args: Array<String>) {
             mapInputToAction(InputAction(GLFW_KEY_D, GLFW_PRESS)) { MoveRight(true) }
             mapInputToAction(InputAction(GLFW_KEY_D, GLFW_RELEASE)) { MoveRight(false) }
         }
-
-// todo: Maybe register levels?
-//        levels {
-//            level("one", start = true) {
-//                registerSystem<SpriteSystem>()
-//                registerSystem<InputSystem>()
-//                registerSystem<FollowCamera2DSystem>()
-//                registerSystem<CharacterSystem>()
-//
-//                createEntity(Character()::onCreate)
-//            }
-//
-//            level("two") {
-//                registerSystem<SpriteSystem>()
-//                registerSystem<InputSystem>()
-//                registerSystem<FollowCamera2DSystem>()
-//                registerSystem<CharacterSystem>()
-//
-//                createEntity(Character()::onCreate)
-//            }
-//        }
 
 // todo: add window config
 //        window {

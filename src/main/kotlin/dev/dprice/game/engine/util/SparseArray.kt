@@ -1,6 +1,5 @@
 package dev.dprice.game.engine.util
 
-inline fun <reified T> sparseArrayOf(): SparseArray<T> = SparseArray()
 open class SparseArray<T> : Collection<T> {
     private var mappings: List<IntRange> = emptyList()
     private var contents: List<T> = emptyList()
@@ -72,3 +71,19 @@ open class SparseArray<T> : Collection<T> {
             }
     }
 }
+
+fun <T> Array<out T>.asSparseArray(): SparseArray<T> = SparseArray<T>().apply {
+    this@asSparseArray.forEachIndexed(::add)
+}
+
+fun <V> Map<out Int, V>.asSparseArray(): SparseArray<V> = SparseArray<V>().apply {
+    this@asSparseArray.forEach { (index, element) ->
+        add(index, element)
+    }
+}
+
+fun <T> sparseArrayOf(vararg elements: T): SparseArray<T> = if (elements.isNotEmpty()) elements.asSparseArray() else emptySparseArray()
+
+fun <T> sparseArrayOf(): SparseArray<T> = emptySparseArray()
+
+fun <T> emptySparseArray(): SparseArray<T> = SparseArray()

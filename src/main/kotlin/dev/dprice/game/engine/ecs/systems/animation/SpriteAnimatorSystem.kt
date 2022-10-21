@@ -1,14 +1,13 @@
 package dev.dprice.game.engine.ecs.systems.animation
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.getComponent
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.sprite.SpriteComponent
 import dev.dprice.game.engine.ecs.systems.sprite.Texture
 
-
-fun SystemProvider.createSpriteAnimatorSystem() = registerSystem<SpriteAnimatorComponent> { timeSinceLast ->
+fun SystemRepository.createSpriteAnimatorSystem() = registerSystem<SpriteAnimatorComponent> { timeSinceLast ->
 
     getComponents<SpriteAnimatorComponent>().forEach { animator ->
         getComponent<SpriteComponent>(animator)?.let { sprite ->

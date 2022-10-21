@@ -1,0 +1,40 @@
+package dev.dprice.game.engine.ecs
+
+import org.koin.core.annotation.Single
+
+interface SystemRepository {
+    fun registerSystem(id: String, runner: SystemRunner.(delta: Double) -> Unit)
+
+    fun unregisterSystem(id: String)
+
+    fun getSystems() : List<SystemRunner.(delta: Double) -> Unit>
+}
+
+@Single
+class SystemRepositoryImpl : SystemRepository {
+    private val systems: MutableMap<String, SystemRunner.(Double) -> Unit> = mutableMapOf()
+    override fun registerSystem(id: String, runner: SystemRunner.(delta: Double) -> Unit) {
+        systems[id] = runner
+    }
+
+    override fun unregisterSystem(id: String) {
+        systems.remove(id)
+    }
+
+    override fun getSystems() = systems.values.toList()
+}
+
+inline fun <reified T: Any> SystemRepository.registerSystem(
+    noinline onRun: SystemRunner.(delta: Double) -> Unit
+) {
+    registerSystem(
+        T::class.qualifiedName ?: error("system id class does not have a name"),
+        onRun
+    )
+}
+
+inline fun <reified T: Any> SystemRepository.unregisterSystem() {
+    unregisterSystem(
+        T::class.qualifiedName ?: error("system id class does not have a name"),
+    )
+}

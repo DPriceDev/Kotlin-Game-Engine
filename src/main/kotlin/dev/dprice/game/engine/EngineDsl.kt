@@ -1,13 +1,12 @@
 package dev.dprice.game.engine
 
-import dev.dprice.game.engine.ecs.ECS
 import dev.dprice.game.engine.input.InputRepository
 import dev.dprice.game.engine.input.model.Input
 import dev.dprice.game.engine.input.model.InputAction
-import org.koin.core.Koin
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.context.GlobalContext
+import dev.dprice.game.engine.levels.LevelRepository
+import dev.dprice.game.engine.model.Level
+import dev.dprice.game.engine.model.LevelLoader
+import org.koin.core.KoinApplication
 
 class InputBuilder {
     private val mappings: MutableMap<InputAction, (InputAction) -> Input> = mutableMapOf()
@@ -23,28 +22,39 @@ class InputBuilder {
     }
 }
 
-class GameBuilder : KoinComponent {
+class GameBuilder {
     private val inputBuilder = InputBuilder()
-    private var koinBuilder : Koin.() -> Unit = { }
-    private var ecsBuilder : ECS.() -> Unit = { }
+    private var koinBuilder : KoinApplication.() -> Unit = { }
+    private var levels : MutableList<Level> = mutableListOf()
 
-    fun koin(builder: Koin.() -> Unit) {
+    fun koin(builder: KoinApplication.() -> Unit) {
         koinBuilder = builder
     }
 
-    fun ecs(builder: ECS.() -> Unit) {
-        ecsBuilder = builder
+    fun level(
+        name: String = "",
+        isStart: Boolean = true,
+        builder: LevelLoader.() -> Unit
+    ) {
+        require(levels.none { it.name == name })
+        require(levels.none { it.isStart && isStart })
+
+        levels.add(Level(name, isStart, builder))
     }
 
     fun input(builder: InputBuilder.() -> Unit) {
         inputBuilder.apply(builder)
     }
 
-    fun build() {
-        GlobalContext.get().apply(koinBuilder)
-        ECS.apply(ecsBuilder)
+    fun build(
+        levelRepository: LevelRepository,
+        inputRepository: InputRepository,
+        koin: KoinApplication
+    ) {
+        koin.apply(koinBuilder)
 
-        val inputRepository: InputRepository by inject()
+        levels.forEach(levelRepository::registerLevel)
+
         inputBuilder.build(inputRepository)
     }
 }

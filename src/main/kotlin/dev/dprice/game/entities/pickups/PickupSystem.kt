@@ -1,17 +1,17 @@
 package dev.dprice.game.entities.pickups
 
-import dev.dprice.game.engine.ecs.model.SystemProvider
-import dev.dprice.game.engine.ecs.model.registerSystem
+import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.sprite.SpriteComponent
 import dev.dprice.game.engine.ecs.systems.sprite.Texture
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.length
 import dev.dprice.game.entities.character.CharacterComponent
 import kotlin.math.abs
-import dev.dprice.game.engine.ecs.model.getComponents
-import dev.dprice.game.engine.ecs.model.getComponent
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
 
-fun SystemProvider.createPickUpSystem() = registerSystem<PickupComponent> {
+fun SystemRepository.createPickUpSystem() = registerSystem<PickupComponent> {
     getComponents<PickupComponent>().filter { !it.isCollected }.forEach { pickup ->
         val pickupTransform = getComponent<TransformComponent>(pickup) ?: error("Pickup does not have a transform")
 

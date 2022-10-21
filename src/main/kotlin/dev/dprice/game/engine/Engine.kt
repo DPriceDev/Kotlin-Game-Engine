@@ -1,10 +1,12 @@
 package dev.dprice.game.engine
 
 import dev.dprice.game.engine.di.EngineModule
-import dev.dprice.game.engine.ecs.ECS
+import dev.dprice.game.engine.ecs.SystemRunner
 import dev.dprice.game.engine.graphics.model.Window
 import dev.dprice.game.engine.input.InputRepository
 import dev.dprice.game.engine.input.model.InputAction
+import dev.dprice.game.engine.levels.LevelRepository
+import dev.dprice.game.engine.model.LevelLoader
 import org.koin.core.context.GlobalContext
 import org.koin.ksp.generated.module
 import org.lwjgl.glfw.Callbacks
@@ -18,25 +20,35 @@ import org.lwjgl.opengl.GL11
 import java.nio.ByteBuffer
 
 fun runGame(setup: GameBuilder.() -> Unit) {
-    GlobalContext.startKoin {
+    val koinApp = GlobalContext.startKoin {
         modules(EngineModule().module)
     }
 
-    val inputRepository = GlobalContext.get().get<InputRepository>()
+    val inputRepository = koinApp.koin.get<InputRepository>()
+    val systemRunner = koinApp.koin.get<SystemRunner>()
+    val levelRepository = koinApp.koin.get<LevelRepository>()
 
-    GameBuilder().apply(setup).build()
+    GameBuilder().apply(setup).build(levelRepository, inputRepository, koinApp)
 
-    runGame(inputRepository)
+    val levelLoader = koinApp.koin.get<LevelLoader>()
+
+    runGame(inputRepository, levelLoader, systemRunner)
 }
 
-private fun runGame(inputRepository: InputRepository) {
+private fun runGame(
+    inputRepository: InputRepository,
+    levelLoader: LevelLoader,
+    systemRunner: SystemRunner
+) {
     initializeGLFW()
     val window = initializeWindow()
     setupInputCallback(window, inputRepository)
     setActiveWindow(window)
 
+    levelLoader.loadStartLevel()
+
     // blocks until window is closed
-    gameLoop(window)
+    gameLoop(window, systemRunner)
 
     tearDownWindow(window)
     tearDownGLFW()
@@ -85,7 +97,7 @@ fun setActiveWindow(window: Window) {
     GLFW.glfwShowWindow(window.id)
 }
 
-private fun gameLoop(window: Window) {
+private fun gameLoop(window: Window, systemRunner: SystemRunner) {
     // Bind LWJGL to the current opengl context
     GL.createCapabilities()
 
@@ -106,7 +118,7 @@ private fun gameLoop(window: Window) {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
 
         // Run the ecs systems
-        ECS.run(delta)
+        systemRunner.run(delta)
 
         // Swap the current frame buffer to the back buffer
         GLFW.glfwSwapBuffers(window.id)
