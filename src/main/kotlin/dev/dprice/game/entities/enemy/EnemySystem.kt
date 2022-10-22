@@ -4,7 +4,7 @@ import dev.dprice.game.engine.ecs.SystemRepository
 import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.animation.SpriteAnimatorComponent
 import dev.dprice.game.entities.character.Direction
-import dev.dprice.game.entities.navigation.NavigatorComponent
+import dev.dprice.game.systems.navigation.NavigatorComponent
 import kotlin.math.max
 import dev.dprice.game.engine.ecs.getComponent
 import dev.dprice.game.engine.ecs.getComponents

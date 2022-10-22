@@ -8,6 +8,7 @@ import dev.dprice.game.engine.ecs.systems.camera.Camera2DComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.ecs.systems.transform.asTransform
 import dev.dprice.game.engine.graphics.Renderer
+import dev.dprice.game.engine.model.Vector3f
 import org.koin.core.component.inject
 
 fun SystemRepository.createSpriteSystem() = registerSystem<SpriteComponent> {
@@ -18,16 +19,37 @@ fun SystemRepository.createSpriteSystem() = registerSystem<SpriteComponent> {
         getComponents<SpriteComponent>().forEach { sprite ->
             val transform = getComponent<TransformComponent>(sprite)
 
-            renderer.drawSprite(
-                quadVerticesAndCoords,
+            val vertices = when (val texture = sprite.texture) {
+                is Texture.Full -> quadVerticesAndCoords
+                is Texture.TileMap -> getTileMapVertices(texture)
+            }
+
+            renderer.drawTriangles(
+                vertices,
                 quadTriangleIndices,
                 sprite.texture,
                 sprite.vertexShader,
                 sprite.fragmentShader,
-                transform.asTransform(),
+                transform.asTransform().copy(
+                    scale = transform.scale * Vector3f(sprite.size.x, sprite.size.y)
+                ),
                 camera
             )
         }
+    }
+}
+
+private fun getTileMapVertices(
+    tileMap: Texture.TileMap
+): FloatArray {
+
+    return with(tileMap.tileCoords) {
+         floatArrayOf(
+            0.5f, 0.5f, 0.0f, right, top, // top right
+            0.5f, -0.5f, 0.0f, right, bottom,  // bottom right
+            -0.5f, -0.5f, 0.0f, left, bottom, // bottom left
+            -0.5f, 0.5f, 0.0f, left, top,   // top left
+        )
     }
 }
 

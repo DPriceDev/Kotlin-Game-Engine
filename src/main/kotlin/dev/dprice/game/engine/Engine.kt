@@ -149,13 +149,17 @@ private suspend fun gameLoop(
         // Clear the current frame buffer
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
 
-        val defered = async(mainDispatcher) {
+        val deferred = async(mainDispatcher) {
+            val systemTime = glfwGetTime()
             systemRunner.run(delta)
+            println("System time: ${ glfwGetTime() - systemTime }")
         }
 
+        val renderTime = glfwGetTime()
         renderer.renderFrame()
+        println("Render time: ${ glfwGetTime() - renderTime }")
 
-        defered.await()
+        deferred.await()
 
         showFPS(window)
 

@@ -1,4 +1,4 @@
-package dev.dprice.game.entities.navigation
+package dev.dprice.game.systems.navigation
 
 import dev.dprice.game.engine.ecs.SystemRepository
 import dev.dprice.game.engine.ecs.getComponent

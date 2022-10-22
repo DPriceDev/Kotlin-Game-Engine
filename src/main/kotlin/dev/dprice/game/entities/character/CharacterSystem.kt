@@ -6,7 +6,7 @@ import dev.dprice.game.engine.ecs.systems.input.InputComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.model.Degree
 import dev.dprice.game.engine.model.Rotation3f
-import dev.dprice.game.entities.navigation.NavigatorComponent
+import dev.dprice.game.systems.navigation.NavigatorComponent
 import dev.dprice.game.engine.ecs.getComponent
 import dev.dprice.game.engine.ecs.getComponents
 

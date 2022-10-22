@@ -3,19 +3,13 @@ package dev.dprice.game.engine.model
 import kotlin.math.cos
 import kotlin.math.sin
 
-class Matrix4f(values: List<Float> = identity) {
-    private val values: List<Float> = values.let {
-        when {
-            it.size >= 16 -> it.take(16)
-            else -> ((it.size + 16)..16).fold(it) { acc, index ->
-                acc.plus(0f)
-            }
-        }
+class Matrix4f(private val values: Array<Float> = identity) {
+    constructor(vararg values: Float) : this(values.toTypedArray())
+    init {
+        require(values.size == 16)
     }
 
-    constructor(vararg values: Float) : this(values.toList())
-
-    fun array() = values.toList()
+    fun array() = values
 
     fun columns(): List<List<Float>> {
         val index = values.withIndex().map { it.index % 4 to it.value }
@@ -26,16 +20,16 @@ class Matrix4f(values: List<Float> = identity) {
         return mapped
     }
 
-    fun rows() = values.chunked(4)
+    fun rows() = values.toList().chunked(4)
 
     operator fun plus(other: Matrix4f) = Matrix4f(
-        values.mapIndexed { index, value ->
+        values.mapIndexedTo(arrayListOf()) { index, value ->
             value + other.values[index]
-        }
+        }.toTypedArray()
     )
 
     operator fun minus(other: Matrix4f) = Matrix4f(
-        values.mapIndexed { index, value -> value - other.values[index] }
+        values.mapIndexed { index, value -> value - other.values[index] }.toTypedArray()
     )
 
     operator fun times(other: Matrix4f) = Matrix4f(
@@ -45,11 +39,11 @@ class Matrix4f(values: List<Float> = identity) {
                     acc + (value * row[index])
                 }
             }
-        }
+        }.toTypedArray()
     )
 
     companion object {
-        val identity = listOf(
+        val identity = arrayOf(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f,
@@ -61,14 +55,15 @@ class Matrix4f(values: List<Float> = identity) {
 }
 
 operator fun Matrix4f.times(value: Float) = Matrix4f(
-    array().map { it * value }
+    array().map { it * value }.toTypedArray()
 )
 
 operator fun Matrix4f.times(value: Vector4f) = Matrix4f(
-    array().chunked(4)
+    array().toList().chunked(4)
         .flatMapIndexed { rowIndex, row ->
             row.map { it * value[rowIndex] }
         }
+        .toTypedArray()
 )
 
 fun Matrix4f.asFloatArray() = columns().flatten().toFloatArray()

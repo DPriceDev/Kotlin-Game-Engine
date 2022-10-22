@@ -1,4 +1,4 @@
-package dev.dprice.game.entities.pickups
+package dev.dprice.game.systems.pickups
 
 import dev.dprice.game.engine.ecs.SystemRepository
 import dev.dprice.game.engine.ecs.getComponent
@@ -24,8 +24,11 @@ fun SystemRepository.createPickUpSystem() = registerSystem<PickupComponent> {
                 pickup.isCollected = true
                 val sprite = getComponent<SpriteComponent>(pickup)
                 val texture = (sprite.texture as? Texture.TileMap) ?: error("pickup texture is not a tilemap")
-                texture.yIndex = 5
-                texture.xIndex = 12
+
+                sprite.texture = texture.copy(
+                    xIndex = 12,
+                    yIndex = 5
+                )
             }
         }
     }

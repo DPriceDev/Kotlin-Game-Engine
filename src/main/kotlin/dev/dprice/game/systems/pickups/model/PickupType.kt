@@ -1,4 +1,4 @@
-package dev.dprice.game.entities.pickups.model
+package dev.dprice.game.systems.pickups.model
 
 enum class PickupType {
     PELLET,

@@ -9,8 +9,18 @@ data class LoadedTexture(
     val id: Int,
     val width: Int,
     val height: Int
-)
+) {
 
+    fun bind() {
+        GL30.glEnable(GL30.GL_BLEND)
+        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA)
+
+        GL30.glVertexAttribPointer(1, 2, GL30.GL_FLOAT, false, 5 * Float.SIZE_BYTES, 3L * Float.SIZE_BYTES)
+
+        GL30.glActiveTexture(GL30.GL_TEXTURE0)
+        GL30.glBindTexture(GL30.GL_TEXTURE_2D, id)
+    }
+}
 
 interface TextureRepository {
     fun getTexture(path: String) : LoadedTexture

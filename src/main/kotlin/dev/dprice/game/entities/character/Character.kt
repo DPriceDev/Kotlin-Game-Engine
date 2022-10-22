@@ -8,8 +8,9 @@ import dev.dprice.game.engine.ecs.systems.sprite.SpriteComponent
 import dev.dprice.game.engine.ecs.systems.sprite.Texture
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
 import dev.dprice.game.engine.input.model.Input
+import dev.dprice.game.engine.model.Vector2f
 import dev.dprice.game.engine.model.Vector3f
-import dev.dprice.game.entities.navigation.NavigatorComponent
+import dev.dprice.game.systems.navigation.NavigatorComponent
 
 data class MoveUp(val isPressed: Boolean) : Input
 data class MoveDown(val isPressed: Boolean) : Input
@@ -24,13 +25,16 @@ fun EntityInteractor.createCharacter(
     registerComponent(NavigatorComponent())
     registerComponent(
         SpriteComponent(
-            Texture.TileMap(
+            size = Vector2f(15f, 15f),
+            texture = Texture.TileMap(
                 "/textures/charsheet-two.png",
                 15,
                 15,
+                248f,
+                224f,
                 0,
                 0,
-                1
+                1,
             ),
             zDepth = 1f
         )

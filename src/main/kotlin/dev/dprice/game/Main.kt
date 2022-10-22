@@ -10,9 +10,9 @@ import dev.dprice.game.entities.character.*
 import dev.dprice.game.entities.enemy.createEnemySystem
 import dev.dprice.game.entities.level.createMaze
 import dev.dprice.game.entities.level.createMazeGeneratorSystem
-import dev.dprice.game.entities.navigation.createNavigationGridSystem
-import dev.dprice.game.entities.navigation.createNavigationSystem
-import dev.dprice.game.entities.pickups.createPickUpSystem
+import dev.dprice.game.systems.navigation.createNavigationGridSystem
+import dev.dprice.game.systems.navigation.createNavigationSystem
+import dev.dprice.game.systems.pickups.createPickUpSystem
 import org.lwjgl.glfw.GLFW.*
 
 fun main(args: Array<String>) = runGame {

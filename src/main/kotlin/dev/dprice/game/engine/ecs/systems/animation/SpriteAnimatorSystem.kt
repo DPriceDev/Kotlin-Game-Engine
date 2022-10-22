@@ -18,10 +18,9 @@ fun SystemRepository.createSpriteAnimatorSystem() = registerSystem<SpriteAnimato
             val newIndex = if (nextIndex > tiles.lastIndex) 0 else nextIndex
             val (x, y) = tiles.get(newIndex)
 
-            (sprite.texture as? Texture.TileMap)?.let {
-                it.xIndex = x
-                it.yIndex = y
-            }
+           (sprite.texture as? Texture.TileMap)?.let {
+               sprite.texture = it.copy(xIndex = x, yIndex = y)
+           }
 
             animator.currentFrameTime = 0f
             animator.currentTile = newIndex
