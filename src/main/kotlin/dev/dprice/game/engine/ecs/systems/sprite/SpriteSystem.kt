@@ -1,6 +1,8 @@
 package dev.dprice.game.engine.ecs.systems.sprite
 
 import dev.dprice.game.engine.ecs.SystemRepository
+import dev.dprice.game.engine.ecs.getComponent
+import dev.dprice.game.engine.ecs.getComponents
 import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.camera.Camera2DComponent
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
@@ -12,8 +14,6 @@ import dev.dprice.game.engine.model.*
 import org.koin.core.component.inject
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*
-import dev.dprice.game.engine.ecs.getComponent
-import dev.dprice.game.engine.ecs.getComponents
 
 fun SystemRepository.createSpriteSystem() = registerSystem<SpriteComponent> {
 
@@ -22,7 +22,6 @@ fun SystemRepository.createSpriteSystem() = registerSystem<SpriteComponent> {
 
         getComponents<SpriteComponent>().forEach { sprite ->
             val transform = getComponent<TransformComponent>(sprite)
-                ?: error("cannot find transform for sprite") // todo: maybe just skip?
 
             val shaderRepository: ShaderRepository by inject()
             val textureRepository: TextureRepository by inject()

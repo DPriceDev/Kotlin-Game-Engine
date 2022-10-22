@@ -2,6 +2,7 @@ package dev.dprice.game.engine.ecs
 
 import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.util.SparseArray
+import dev.dprice.game.engine.util.emptySparseArray
 import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
@@ -27,7 +28,11 @@ inline fun <reified T: Component> ComponentRepository.getComponents() : SparseAr
     return getComponents(T::class)
 }
 
-inline fun <reified T: Component> ComponentRepository.getComponent(component: Component) : T? {
+inline fun <reified T: Component> ComponentRepository.getComponent(component: Component) : T {
+    return getComponent(T::class, component) ?: error("component of type ${ T::class } not found for $component")
+}
+
+inline fun <reified T: Component> ComponentRepository.getComponentOrNull(component: Component) : T? {
     return getComponent(T::class, component)
 }
 
@@ -45,9 +50,10 @@ class ComponentRepositoryImpl : ComponentRepository {
     }
 
     private fun <T: Component> createNewComponentArray(clazz: KClass<T>): SparseArray<T> {
-        val array = SparseArray<T>()
-        components[clazz] = (array as SparseArray<Component>)
-        return array
+        return emptySparseArray<T>().apply {
+            @Suppress("UNCHECKED_CAST")
+            components[clazz] = (this as SparseArray<Component>)
+        }
     }
 
     override fun <T : Component> getComponent(clazz: KClass<T>, component: Component) = getComponents(clazz).get(component)

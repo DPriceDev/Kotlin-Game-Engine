@@ -17,10 +17,10 @@ fun SystemRepository.createNavigationSystem() = registerSystem<NavigatorComponen
     val nodes = getComponents<NavigatableComponent>()
 
     getComponents<NavigatorComponent>().forEach { navigator ->
-        val transform = getComponent<TransformComponent>(navigator) ?: error("navigator transform not found")
+        val transform = getComponent<TransformComponent>(navigator)
 
         val closest = nodes.minBy { node ->
-            val nodeTransform = getComponent<TransformComponent>(node) ?: error("node transform not found")
+            val nodeTransform = getComponent<TransformComponent>(node)
             abs((transform.position - nodeTransform.position).length())
         }
 
@@ -29,13 +29,14 @@ fun SystemRepository.createNavigationSystem() = registerSystem<NavigatorComponen
         navigator.availableDirections = closest.connectedNodes.map { it.key }
 
         val speed = navigator.movementSpeed
-        val target = navigator.targetNode
-        val targetTransform = target?.let { getComponent<TransformComponent>(target) } ?: error("")
-        val difference = targetTransform.position - transform.position
-        val diff = Vector3f(
-            x = difference.x.sign * min(speed * timeSinceLast.toFloat(), difference.x.absoluteValue),
-            y = difference.y.sign * min(speed * timeSinceLast.toFloat(), difference.y.absoluteValue)
-        )
-        transform.position = transform.position + diff
+        navigator.targetNode?.let { target ->
+            val targetTransform = getComponent<TransformComponent>(target)
+            val difference = targetTransform.position - transform.position
+            val diff = Vector3f(
+                x = difference.x.sign * min(speed * timeSinceLast.toFloat(), difference.x.absoluteValue),
+                y = difference.y.sign * min(speed * timeSinceLast.toFloat(), difference.y.absoluteValue)
+            )
+            transform.position = transform.position + diff
+        }
     }
 }

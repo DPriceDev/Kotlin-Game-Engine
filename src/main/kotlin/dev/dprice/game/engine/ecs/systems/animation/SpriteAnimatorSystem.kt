@@ -10,24 +10,23 @@ import dev.dprice.game.engine.ecs.systems.sprite.Texture
 fun SystemRepository.createSpriteAnimatorSystem() = registerSystem<SpriteAnimatorComponent> { timeSinceLast ->
 
     getComponents<SpriteAnimatorComponent>().forEach { animator ->
-        getComponent<SpriteComponent>(animator)?.let { sprite ->
-            val currentTime = animator.currentFrameTime + timeSinceLast.toFloat()
-            if (currentTime >= animator.timePerFrame) {
-                val tiles = animator.tiles
-                val nextIndex = animator.currentTile + 1
-                val newIndex = if (nextIndex > tiles.lastIndex) 0 else nextIndex
-                val (x, y) = tiles.get(newIndex)
+        val sprite = getComponent<SpriteComponent>(animator)
+        val currentTime = animator.currentFrameTime + timeSinceLast.toFloat()
+        if (currentTime >= animator.timePerFrame) {
+            val tiles = animator.tiles
+            val nextIndex = animator.currentTile + 1
+            val newIndex = if (nextIndex > tiles.lastIndex) 0 else nextIndex
+            val (x, y) = tiles.get(newIndex)
 
-                (sprite.texture as? Texture.TileMap)?.let {
-                    it.xIndex = x
-                    it.yIndex = y
-                }
-
-                animator.currentFrameTime = 0f
-                animator.currentTile = newIndex
-            } else {
-                animator.currentFrameTime = currentTime
+            (sprite.texture as? Texture.TileMap)?.let {
+                it.xIndex = x
+                it.yIndex = y
             }
+
+            animator.currentFrameTime = 0f
+            animator.currentTile = newIndex
+        } else {
+            animator.currentFrameTime = currentTime
         }
     }
 }

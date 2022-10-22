@@ -7,10 +7,13 @@ import dev.dprice.game.engine.input.InputRepository
 import dev.dprice.game.engine.input.model.InputAction
 import dev.dprice.game.engine.levels.LevelLoader
 import dev.dprice.game.engine.levels.LevelRepository
+import kotlinx.coroutines.runBlocking
 import org.koin.core.context.GlobalContext
 import org.koin.ksp.generated.module
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW
+import org.lwjgl.glfw.GLFW.glfwGetTime
+import org.lwjgl.glfw.GLFW.glfwSetWindowTitle
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.openal.AL
 import org.lwjgl.openal.ALC
@@ -19,7 +22,7 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
 import java.nio.ByteBuffer
 
-fun runGame(setup: GameBuilder.() -> Unit) {
+fun runGame(setup: GameBuilder.() -> Unit) = runBlocking {
     val koinApp = GlobalContext.startKoin {
         modules(EngineModule().module)
     }
@@ -91,7 +94,7 @@ fun setActiveWindow(window: Window) {
     GLFW.glfwMakeContextCurrent(window.id)
 
     // Enable v-sync (lock to 60fps)
-    GLFW.glfwSwapInterval(1)
+    GLFW.glfwSwapInterval(0)
 
     // Make the window visible
     GLFW.glfwShowWindow(window.id)
@@ -106,28 +109,45 @@ private fun gameLoop(window: Window, systemRunner: SystemRunner) {
     // Set clear colour, i.e. set background colour
     GL11.glClearColor(0.2f, 0.3f, 0.3f, 1.0f)
 
-    var time = System.nanoTime()
+    var time = glfwGetTime()
 
     while (!GLFW.glfwWindowShouldClose(window.id)) {
 
         // Calculate delta time
-        val delta = (System.nanoTime() - time) / 1000000000.0
-        time = System.nanoTime()
+        val delta = (glfwGetTime() - time)
+        time = glfwGetTime()
 
         // Clear the current frame buffer
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
 
-        // Run the ecs systems
-        val time2 = System.currentTimeMillis()
         systemRunner.run(delta)
-        val deltaTwo = (System.currentTimeMillis() - time2) // 1000000000.0
-        println(deltaTwo)
+
+        showFPS(window)
 
         // Swap the current frame buffer to the back buffer
         GLFW.glfwSwapBuffers(window.id)
 
         // check for input events
         GLFW.glfwPollEvents()
+    }
+}
+
+var lastTime = 0.0
+var nbFrames = 0
+
+fun showFPS(window: Window) {
+    // Measure speed
+    val currentTime = glfwGetTime()
+    val delta = currentTime - lastTime
+    nbFrames++
+    if ( delta >= 1.0 ){ // If last cout was more than 1 sec ago
+        val fps = nbFrames / delta
+
+        glfwSetWindowTitle(window.id, "fps: $fps")
+        println("fps: $fps")
+
+        nbFrames = 0
+        lastTime = currentTime
     }
 }
 

@@ -12,7 +12,7 @@ import kotlin.math.abs
 fun SystemRepository.createNavigationGridSystem() = registerSystem("navigation grid") { timeSinceLast ->
 
     val nodesAndTransforms = getComponents<NavigatableComponent>()
-        .map { it to (getComponent<TransformComponent>(it) ?: error("node transform not found")) }
+        .map { it to (getComponent<TransformComponent>(it)) }
 
     nodesAndTransforms
         .filter { !it.first.isAttached }

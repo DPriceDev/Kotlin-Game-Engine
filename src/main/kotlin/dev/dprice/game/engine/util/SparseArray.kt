@@ -1,89 +1,89 @@
 package dev.dprice.game.engine.util
 
-open class SparseArray<T> : Collection<T> {
-    private var mappings: List<IntRange> = emptyList()
-    private var contents: List<T> = emptyList()
+class SparseArray<T: Any>(
+    private var elements: Array<Any>,
+    private var indices: Array<Int> = emptyArray()
+) : Collection<T> {
+    override val size: Int = elements.size
 
-    override val size: Int = contents.size
+    override fun isEmpty(): Boolean = elements.isEmpty()
 
-    override fun isEmpty(): Boolean = contents.isEmpty()
+    @Suppress("UNCHECKED_CAST")
+    override fun iterator() = (elements as Array<T>).iterator()
 
-    override fun iterator() = contents.iterator()
+    override fun containsAll(elements: Collection<T>) = this.elements.all { contains(it) }
 
-    override fun containsAll(elements: Collection<T>) = contents.containsAll(elements)
-
-    override fun contains(element: T) = contents.contains(element)
+    override fun contains(element: T) = elements.contains(element)
 
     fun getOrNull(index: Int) : T? {
-        return mappings.flatten()
+        return indices
             .indexOf(index)
-            .let { contents.getOrNull(it) }
+            .let { elements.getOrNull(it) as T? }
     }
 
-    fun add(index: Int, item: T) {
+    fun <T> add(index: Int, item: T) {
         insertMapping(index)
-        contents = contents.toMutableList().apply {
-            val mappedIndex = mappings.flatten().indexOf(index)
-            add(mappedIndex, item)
-        }
+        elements = elements.toMutableList().apply {
+            val mappedIndex = this@SparseArray.indices.indexOf(index)
+            this.add(mappedIndex, item as Any)
+        }.toTypedArray()
     }
 
     fun remove(index: Int) {
-        contents = contents.toMutableList().apply {
-            val mappedIndex = mappings.flatten().indexOf(index)
+        elements = elements.toMutableList().apply {
+            val mappedIndex = this@SparseArray.indices.indexOf(index)
             removeAt(mappedIndex)
-        }
+        }.toTypedArray()
 
         removeMapping(index)
     }
 
     private fun insertMapping(index: Int) {
-        mappings = mappings.flatten()
+        indices = indices
             .toMutableList()
             .apply { add(index) }
-            .convertListToRanges()
+            .toTypedArray()
+            //.convertListToRanges()
     }
 
     private fun removeMapping(index: Int) {
-        mappings = mappings.flatten()
+        indices = indices
             .toMutableList()
             .apply { remove(index) }
-            .convertListToRanges()
+            .toTypedArray()
     }
 
-    private fun List<Int>.convertListToRanges() : List<IntRange> {
-        return sorted()
-            .distinct()
-            .fold(listOf()) { ranges, index ->
-                val last = ranges.lastOrNull()
-                if (last != null) {
-
-                    if (last.last + 1 != index) {
-                        ranges.plusElement(index..index)
-                    } else {
-                        ranges.toMutableList()
-                            .dropLast(1)
-                            .plusElement(ranges.last().first..index)
-                    }
-                } else {
-                    ranges.plusElement(index..index)
-                }
-            }
-    }
+//    private fun List<Int>.convertListToRanges() : List<IntRange> {
+//        return sorted()
+//            .distinct()
+//            .fold(listOf()) { ranges, index ->
+//                val last = ranges.lastOrNull()
+//                if (last != null) {
+//
+//                    if (last.last + 1 != index) {
+//                        ranges.plusElement(index..index)
+//                    } else {
+//                        ranges.toMutableList()
+//                            .dropLast(1)
+//                            .plusElement(ranges.last().first..index)
+//                    }
+//                } else {
+//                    ranges.plusElement(index..index)
+//                }
+//            }
+//    }
 }
 
-fun <T> Array<out T>.asSparseArray(): SparseArray<T> = SparseArray<T>().apply {
-    this@asSparseArray.forEachIndexed(::add)
-}
+@Suppress("UNCHECKED_CAST")
+fun <T : Any> Array<T>.asSparseArray(): SparseArray<T> = SparseArray(this as Array<Any>)
 
-fun <V> Map<out Int, V>.asSparseArray(): SparseArray<V> = SparseArray<V>().apply {
-    this@asSparseArray.forEach { (index, element) ->
-        add(index, element)
-    }
-}
+fun <T: Any> Map<out Int, T>.asSparseArray(): SparseArray<T> = SparseArray(
+    values.toTypedArray(),
+    keys.toTypedArray()
+)
 
-fun <T> sparseArrayOf(vararg elements: T): SparseArray<T> = if (elements.isNotEmpty()) elements.asSparseArray() else emptySparseArray()
+fun <T: Any> sparseArrayOf(vararg elements: T): SparseArray<T> = if (elements.isNotEmpty()) elements.asSparseArray() as SparseArray<T> else emptySparseArray()
 
-fun <T> sparseArrayOf(): SparseArray<T> = emptySparseArray()
+fun <T: Any> sparseArrayOf(): SparseArray<T> = emptySparseArray()
 
-fun <T> emptySparseArray(): SparseArray<T> = SparseArray()
+fun <T: Any> emptySparseArray(): SparseArray<T> = SparseArray(emptyArray())

@@ -7,7 +7,7 @@ interface SystemRepository {
 
     fun unregisterSystem(id: String)
 
-    fun getSystems() : List<SystemRunner.(delta: Double) -> Unit>
+    fun getSystems() : Map<String, SystemRunner.(Double) -> Unit>
 }
 
 @Single
@@ -21,7 +21,7 @@ class SystemRepositoryImpl : SystemRepository {
         systems.remove(id)
     }
 
-    override fun getSystems() = systems.values.toList()
+    override fun getSystems() = systems
 }
 
 inline fun <reified T: Any> SystemRepository.registerSystem(
