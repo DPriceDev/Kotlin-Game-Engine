@@ -2,13 +2,17 @@ package dev.dprice.game.engine
 
 import dev.dprice.game.engine.di.EngineModule
 import dev.dprice.game.engine.ecs.SystemRunner
+import dev.dprice.game.engine.graphics.Renderer
 import dev.dprice.game.engine.graphics.model.Window
 import dev.dprice.game.engine.input.InputRepository
 import dev.dprice.game.engine.input.model.InputAction
 import dev.dprice.game.engine.levels.LevelLoader
 import dev.dprice.game.engine.levels.LevelRepository
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.koin.core.context.GlobalContext
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import org.koin.ksp.generated.module
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW
@@ -21,10 +25,21 @@ import org.lwjgl.openal.ALC10
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
 import java.nio.ByteBuffer
+import kotlin.coroutines.CoroutineContext
 
 fun runGame(setup: GameBuilder.() -> Unit) = runBlocking {
     val koinApp = GlobalContext.startKoin {
         modules(EngineModule().module)
+
+        modules(
+            module {
+//                single { RendererImpl() } bind Renderer::class
+
+                single(named("main")) { newSingleThreadContext("main") } bind CoroutineDispatcher::class
+                single(named("render")) { this@runBlocking.coroutineContext } bind CoroutineContext::class
+                single(named("audio")) { newSingleThreadContext("audio") } bind CoroutineDispatcher::class
+            }
+        )
     }
 
     val inputRepository = koinApp.koin.get<InputRepository>()
@@ -35,26 +50,35 @@ fun runGame(setup: GameBuilder.() -> Unit) = runBlocking {
 
     val levelLoader = koinApp.koin.get<LevelLoader>()
 
-    runGame(inputRepository, levelLoader, systemRunner)
+    val mainDispatcher = koinApp.koin.get<CoroutineContext>(named("render"))
+
+    val renderer = koinApp.koin.get<Renderer>()
+
+    runGame(inputRepository, levelLoader, systemRunner, mainDispatcher, renderer)
 }
 
-private fun runGame(
+private suspend fun runGame(
     inputRepository: InputRepository,
     levelLoader: LevelLoader,
-    systemRunner: SystemRunner
+    systemRunner: SystemRunner,
+    mainDispatcher: CoroutineContext,
+    renderer: Renderer
 ) {
     initializeGLFW()
-    val window = initializeWindow()
-    setupInputCallback(window, inputRepository)
-    setActiveWindow(window)
 
-    levelLoader.loadStartLevel()
+        val window = initializeWindow()
+        setupInputCallback(window, inputRepository)
+        setActiveWindow(window)
 
-    // blocks until window is closed
-    gameLoop(window, systemRunner)
+        levelLoader.loadStartLevel()
 
-    tearDownWindow(window)
-    tearDownGLFW()
+        // blocks until window is closed
+
+        gameLoop(window, systemRunner, mainDispatcher, renderer)
+
+
+        tearDownWindow(window)
+        tearDownGLFW()
 }
 
 private fun initializeGLFW() {
@@ -100,7 +124,12 @@ fun setActiveWindow(window: Window) {
     GLFW.glfwShowWindow(window.id)
 }
 
-private fun gameLoop(window: Window, systemRunner: SystemRunner) {
+private suspend fun gameLoop(
+    window: Window,
+    systemRunner: SystemRunner,
+    mainDispatcher: CoroutineContext,
+    renderer: Renderer
+) = coroutineScope {
     // Bind LWJGL to the current opengl context
     GL.createCapabilities()
 
@@ -120,7 +149,13 @@ private fun gameLoop(window: Window, systemRunner: SystemRunner) {
         // Clear the current frame buffer
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
 
-        systemRunner.run(delta)
+        val defered = async(mainDispatcher) {
+            systemRunner.run(delta)
+        }
+
+        renderer.renderFrame()
+
+        defered.await()
 
         showFPS(window)
 

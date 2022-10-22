@@ -2,6 +2,7 @@ package dev.dprice.game.engine.ecs.systems.transform
 
 import dev.dprice.game.engine.ecs.model.Component
 import dev.dprice.game.engine.model.Rotation3f
+import dev.dprice.game.engine.model.Transform
 import dev.dprice.game.engine.model.Vector3f
 
 data class TransformComponent(
@@ -9,3 +10,5 @@ data class TransformComponent(
     var scale: Vector3f = Vector3f(1f, 1f, 1f),
     var rotation: Rotation3f = Rotation3f()
 ) : Component()
+
+fun TransformComponent.asTransform() = Transform(position, scale, rotation)

@@ -9,7 +9,7 @@ interface SystemRunner :
     KoinComponent,
     EntityInteractor,
     ComponentRepository {
-    fun run(deltaTime: Double)
+    suspend fun run(deltaTime: Double)
 }
 
 @Single([SystemRunner::class])
@@ -21,10 +21,10 @@ class SystemRunnerImpl(
     EntityInteractor by entityInteractor,
     ComponentRepository by componentRepository {
 
-    override fun run(deltaTime: Double) {
+    override suspend fun run(deltaTime: Double) {
         systemRepository.getSystems().forEach { (id, system) ->
             val start = glfwGetTime()
-            system.invoke(this@SystemRunnerImpl, deltaTime)
+            system.invoke(this, deltaTime)
             println(
                 "system: $id ran for ${ glfwGetTime() - start } seconds"
             )
