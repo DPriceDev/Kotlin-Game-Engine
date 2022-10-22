@@ -4,8 +4,8 @@ import dev.dprice.game.engine.input.InputRepository
 import dev.dprice.game.engine.input.model.Input
 import dev.dprice.game.engine.input.model.InputAction
 import dev.dprice.game.engine.levels.LevelRepository
-import dev.dprice.game.engine.model.Level
-import dev.dprice.game.engine.model.LevelLoader
+import dev.dprice.game.engine.levels.model.Level
+import dev.dprice.game.engine.levels.LevelLoader
 import org.koin.core.KoinApplication
 
 class InputBuilder {

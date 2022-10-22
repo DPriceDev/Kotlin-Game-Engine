@@ -22,7 +22,7 @@ class SystemRunnerImpl(
 
     override fun run(deltaTime: Double) {
         systemRepository.getSystems().forEach { system ->
-            system.invoke(this, deltaTime)
+            system.invoke(this@SystemRunnerImpl, deltaTime)
         }
     }
 }

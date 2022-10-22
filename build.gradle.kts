@@ -31,6 +31,8 @@ dependencies {
     implementation ("io.insert-koin:koin-annotations:$koinKspVersion")
     ksp ("io.insert-koin:koin-ksp-compiler:$koinKspVersion")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
     // Koin Test features
     //testImplementation("io.insert-koin:koin-test:$koinVersion")
 

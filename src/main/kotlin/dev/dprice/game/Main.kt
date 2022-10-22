@@ -10,31 +10,33 @@ import dev.dprice.game.entities.character.*
 import dev.dprice.game.entities.enemy.createEnemySystem
 import dev.dprice.game.entities.level.createMaze
 import dev.dprice.game.entities.level.createMazeGeneratorSystem
+import dev.dprice.game.entities.navigation.createNavigationGridSystem
 import dev.dprice.game.entities.navigation.createNavigationSystem
 import dev.dprice.game.entities.pickups.createPickUpSystem
 import org.lwjgl.glfw.GLFW.*
 
-fun main(args: Array<String>) {
-    runGame {
+fun main(args: Array<String>) = runGame {
 
-        level {
-            createInputSystem()
-            createSpriteSystem()
-            createNavigationSystem()
-            createMazeGeneratorSystem()
-            createCharacterSystem()
-            createEnemySystem()
+    level {
+        createInputSystem()
+        createNavigationGridSystem()
 
-            createPickUpSystem()
-            createSoundSystem()
+        createNavigationSystem()
+        createMazeGeneratorSystem()
+        createCharacterSystem()
+        createEnemySystem()
 
-            createSpriteAnimatorSystem()
-            //todo: ordering systems? registerSystem<SpriteSystem>(after = InputSystem)
+        createPickUpSystem()
+        createSoundSystem()
 
-            createMaze()
-        }
+        createSpriteAnimatorSystem()
+        createSpriteSystem()
+        //todo: ordering systems? registerSystem<SpriteSystem>(after = InputSystem)
 
-        input {
+        createMaze()
+    }
+
+    input {
 //            mapInputToAxis(
 //                MoveUpAxis,
 //                InputAction(GLFW_KEY_W, GLFW_PRESS) to { 1f },
@@ -47,15 +49,15 @@ fun main(args: Array<String>) {
 //                GLFW_KEY_A to { -1f },
 //            )
 
-            mapInputToAction(InputAction(GLFW_KEY_W, GLFW_PRESS)) { MoveUp(true) }
-            mapInputToAction(InputAction(GLFW_KEY_W, GLFW_RELEASE)) { MoveUp(false) }
-            mapInputToAction(InputAction(GLFW_KEY_S, GLFW_PRESS)) { MoveDown(true) }
-            mapInputToAction(InputAction(GLFW_KEY_S, GLFW_RELEASE)) { MoveDown(false) }
-            mapInputToAction(InputAction(GLFW_KEY_A, GLFW_PRESS)) { MoveLeft(true) }
-            mapInputToAction(InputAction(GLFW_KEY_A, GLFW_RELEASE)) { MoveLeft(false) }
-            mapInputToAction(InputAction(GLFW_KEY_D, GLFW_PRESS)) { MoveRight(true) }
-            mapInputToAction(InputAction(GLFW_KEY_D, GLFW_RELEASE)) { MoveRight(false) }
-        }
+        mapInputToAction(InputAction(GLFW_KEY_W, GLFW_PRESS)) { MoveUp(true) }
+        mapInputToAction(InputAction(GLFW_KEY_W, GLFW_RELEASE)) { MoveUp(false) }
+        mapInputToAction(InputAction(GLFW_KEY_S, GLFW_PRESS)) { MoveDown(true) }
+        mapInputToAction(InputAction(GLFW_KEY_S, GLFW_RELEASE)) { MoveDown(false) }
+        mapInputToAction(InputAction(GLFW_KEY_A, GLFW_PRESS)) { MoveLeft(true) }
+        mapInputToAction(InputAction(GLFW_KEY_A, GLFW_RELEASE)) { MoveLeft(false) }
+        mapInputToAction(InputAction(GLFW_KEY_D, GLFW_PRESS)) { MoveRight(true) }
+        mapInputToAction(InputAction(GLFW_KEY_D, GLFW_RELEASE)) { MoveRight(false) }
+    }
 
 // todo: add window config
 //        window {
@@ -63,5 +65,4 @@ fun main(args: Array<String>) {
 //            width = 800
 //            height = 600
 //        }
-    }
 }

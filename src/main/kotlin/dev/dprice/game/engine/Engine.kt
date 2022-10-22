@@ -5,8 +5,8 @@ import dev.dprice.game.engine.ecs.SystemRunner
 import dev.dprice.game.engine.graphics.model.Window
 import dev.dprice.game.engine.input.InputRepository
 import dev.dprice.game.engine.input.model.InputAction
+import dev.dprice.game.engine.levels.LevelLoader
 import dev.dprice.game.engine.levels.LevelRepository
-import dev.dprice.game.engine.model.LevelLoader
 import org.koin.core.context.GlobalContext
 import org.koin.ksp.generated.module
 import org.lwjgl.glfw.Callbacks
@@ -118,7 +118,10 @@ private fun gameLoop(window: Window, systemRunner: SystemRunner) {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
 
         // Run the ecs systems
+        val time2 = System.currentTimeMillis()
         systemRunner.run(delta)
+        val deltaTwo = (System.currentTimeMillis() - time2) // 1000000000.0
+        println(deltaTwo)
 
         // Swap the current frame buffer to the back buffer
         GLFW.glfwSwapBuffers(window.id)

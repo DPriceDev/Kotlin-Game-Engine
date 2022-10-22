@@ -1,8 +1,8 @@
-package dev.dprice.game.engine.model
+package dev.dprice.game.engine.levels
 
 import dev.dprice.game.engine.ecs.SystemRepository
 import dev.dprice.game.engine.ecs.interactors.EntityInteractor
-import dev.dprice.game.engine.levels.LevelRepository
+import dev.dprice.game.engine.levels.model.Level
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 
@@ -41,9 +41,3 @@ class LevelLoaderImpl(
         loadLevel(level)
     }
 }
-
-data class Level(
-    val name: String,
-    val isStart: Boolean,
-    val builder: LevelLoader.() -> Unit
-)

@@ -4,7 +4,7 @@ import dev.dprice.game.engine.ecs.getComponent
 import dev.dprice.game.engine.ecs.getComponents
 import dev.dprice.game.engine.ecs.registerSystem
 import dev.dprice.game.engine.ecs.systems.transform.TransformComponent
-import dev.dprice.game.engine.model.LevelLoader
+import dev.dprice.game.engine.levels.LevelLoader
 import dev.dprice.game.engine.model.Vector3f
 import dev.dprice.game.entities.character.createCharacter
 import dev.dprice.game.entities.enemy.createEnemy

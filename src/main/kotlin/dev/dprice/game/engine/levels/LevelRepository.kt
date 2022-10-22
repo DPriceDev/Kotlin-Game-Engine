@@ -1,6 +1,6 @@
 package dev.dprice.game.engine.levels
 
-import dev.dprice.game.engine.model.Level
+import dev.dprice.game.engine.levels.model.Level
 import org.koin.core.annotation.Single
 
 interface LevelRepository {

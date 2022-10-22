@@ -1,6 +1,7 @@
 package dev.dprice.game.engine.model
 
 import kotlin.math.acos
+import kotlin.math.atan2
 import kotlin.math.sqrt
 
 data class Vector3f(
@@ -73,4 +74,12 @@ fun Vector3f.lerpTo(target: Vector3f, amount: Float) : Vector3f {
 
 fun Vector3f.angleTo(target: Vector3f) : Degree {
     return Radian(acos(dotProduct(target) / (length() * target.length()))).toDegrees()
+}
+
+fun Vector3f.directionalAngleTo(target: Vector3f) : Degree {
+    val angle = atan2(
+        y - target.y,
+        x - target.x
+    )
+    return Radian(angle).toDegrees()
 }

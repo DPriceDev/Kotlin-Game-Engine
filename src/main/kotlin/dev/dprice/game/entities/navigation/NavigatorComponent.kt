@@ -5,8 +5,9 @@ import dev.dprice.game.entities.character.Direction
 
 data class NavigatorComponent(
     var direction: Direction = Direction.RIGHT,
+    var currentNode: NavigatableComponent? = null,
+    var targetNode: NavigatableComponent? = null,
     var availableDirections: List<Direction> = emptyList(),
-    var searchDistance: Float = 8.5f,
     val canUseAISpaces: Boolean = false,
-    val movementSpeed: Float = 50f
+    val movementSpeed: Float = 50f // todo: Move to movement component?
 ) : Component()
