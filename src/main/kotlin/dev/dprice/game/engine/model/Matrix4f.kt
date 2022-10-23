@@ -3,6 +3,126 @@ package dev.dprice.game.engine.model
 import kotlin.math.cos
 import kotlin.math.sin
 
+//
+//class Matrix4f(private val values: Array<Float> = identity) {
+//    constructor(vararg values: Float) : this(values.toTypedArray())
+//
+//    init {
+//        require(values.size == 16)
+//    }
+//
+//    fun array() = values
+//
+//    fun columns(): List<List<Float>> {
+//        val index = values.withIndex().map { it.index % 4 to it.value }
+//        val group = index.groupBy { it.first }
+//        val mapped = group.map {
+//            it.value.map { it.second }
+//        }
+//        return mapped
+//    }
+//
+//    fun rows() = values.toList().chunked(4)
+//
+//    operator fun plus(other: Matrix4f) = Matrix4f(
+//        values.mapIndexedTo(arrayListOf()) { index, value ->
+//            value + other.values[index]
+//        }.toTypedArray()
+//    )
+//
+//    operator fun minus(other: Matrix4f) = Matrix4f(
+//        values.mapIndexed { index, value -> value - other.values[index] }.toTypedArray()
+//    )
+//
+//    operator fun times(other: Matrix4f) = Matrix4f(
+//        rows().flatMap { row ->
+//            other.columns().map { column ->
+//                column.foldIndexed(0f) { index, acc, value ->
+//                    acc + (value * row[index])
+//                }
+//            }
+//        }.toTypedArray()
+//    )
+//
+//    companion object {
+//        val identity = arrayOf(
+//            1f, 0f, 0f, 0f,
+//            0f, 1f, 0f, 0f,
+//            0f, 0f, 1f, 0f,
+//            0f, 0f, 0f, 1f
+//        )
+//
+//        fun identity() = Matrix4f(identity)
+//    }
+//}
+//
+//operator fun Matrix4f.times(value: Float) = Matrix4f(
+//    array().map { it * value }.toTypedArray()
+//)
+//
+//operator fun Matrix4f.times(value: Vector4f) = Matrix4f(
+//    array().toList().chunked(4)
+//        .flatMapIndexed { rowIndex, row ->
+//            row.map { it * value[rowIndex] }
+//        }
+//        .toTypedArray()
+//)
+//
+//fun Matrix4f.asFloatArray() = columns().flatten().toFloatArray()
+//
+//fun Matrix4f.translate(translation: Vector3f): Matrix4f {
+//    val array = array()
+//    array[3] += translation.x
+//    array[7] *= translation.y
+//    array[11] *= translation.z
+//    return Matrix4f(array)
+//}
+//
+//fun Matrix4f.scale(scale: Vector3f): Matrix4f {
+//    val array = array()
+//    array[0] *= scale.x
+//    array[5] *= scale.y
+//    array[10] *= scale.z
+//    return Matrix4f(array)
+//}
+//
+//fun Matrix4f.rotate(rotation: Degree, axis: Vector3f): Matrix4f {
+//    val cos = cos(rotation.toRadians().value)
+//    val cosMinus = (1 - cos)
+//    val sin = sin(rotation.toRadians().value)
+//
+//    return with(axis.normalize()) {
+//        val xSin = x * sin
+//        val ySin = y * sin
+//        val zSin = z * sin
+//
+//        val xCosMinus = x * cosMinus
+//        val yCosMinus = y * cosMinus
+//        val zCosMinus = z * cosMinus
+//
+//        val array = array()
+//
+//        array[0] *= x * xCosMinus + cos
+//        array[1] *= x * yCosMinus - zSin
+//        array[2] *= x * zCosMinus + ySin
+//        array[4] *= y * xCosMinus + zSin
+//        array[5] *= y * yCosMinus + cos
+//        array[6] *= y * zCosMinus - xSin
+//        array[8] *= z * xCosMinus - ySin
+//        array[9] *= z * yCosMinus + xSin
+//        array[10] *= z * zCosMinus + cos
+//
+//        Matrix4f(array)
+//    }
+//}
+//
+//fun Matrix4f.rotate(rotation3f: Rotation3f): Matrix4f {
+//    if (rotation3f == Rotation3f()) return this
+//    return rotate(rotation3f.pitch, Vector3f(x = 1f))
+//        .rotate(rotation3f.roll, Vector3f(y = 1f))
+//        .rotate(rotation3f.yaw, Vector3f(z = 1f))
+//}
+
 class Matrix4f(private val values: Array<Float> = identity) {
     constructor(vararg values: Float) : this(values.toTypedArray())
     init {

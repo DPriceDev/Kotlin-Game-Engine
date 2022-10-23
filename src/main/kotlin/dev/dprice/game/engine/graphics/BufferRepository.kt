@@ -9,7 +9,6 @@ data class BufferId(val vao: Int, val vbo: Int, val ebo: Int) {
     fun enable(vertices: FloatArray) {
         enable()
 
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, vbo)
         GL30.glBufferData(GL30.GL_ARRAY_BUFFER, vertices, GL30.GL_STATIC_DRAW)
     }
 
@@ -62,7 +61,8 @@ class BufferRepositoryImpl : BufferRepository {
         GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, ebo)
         GL30.glBufferData(GL30.GL_ELEMENT_ARRAY_BUFFER, triangleIndices, GL30.GL_STATIC_DRAW)
 
-        GL30.glVertexAttribPointer(0, 3, GL30.GL_FLOAT, false, 5 * 4, 0)
+        GL30.glVertexAttribPointer(0, 3, GL30.GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
+//        GL30.glVertexAttribPointer(1, 2, GL30.GL_FLOAT, false, 5 * Float.SIZE_BYTES, 3L * Float.SIZE_BYTES)
 
         return BufferId(vao, vbo, ebo)
     }

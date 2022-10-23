@@ -54,6 +54,6 @@ class SpriteComponent(
     var texture: Texture,
     val size: Vector2f,
     val zDepth: Float = 0f,
-    val vertexShader: String = "shaders/BasicVertexShader.glsl",
-    val fragmentShader: String = "shaders/BasicFragmentShader.glsl",
+    val vertexShader: String = "shaders/InstancedSpriteVertexShader.glsl",
+    val fragmentShader: String = "shaders/SpriteFragmentShader.glsl",
 ) : Component()

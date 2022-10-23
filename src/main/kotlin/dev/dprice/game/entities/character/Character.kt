@@ -57,6 +57,6 @@ fun EntityInteractor.createCharacter(
         )
     )
     registerComponent(
-        SoundComponent("sound/pacman_chomp.wav", shouldPlay = true)
+        SoundComponent("sound/pacman_chomp.wav", shouldPlay = false)
     )
 }
